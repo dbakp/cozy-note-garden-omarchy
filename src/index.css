@@ -37,10 +37,12 @@
   }
 }
 
-.note-content {
-  @apply prose prose-sm max-w-none;
-}
+@layer components {
+  .note-content {
+    @apply text-sm leading-relaxed max-w-none;
+  }
 
-.note-editor {
-  @apply font-mono text-sm;
+  .note-editor {
+    @apply font-mono text-sm;
+  }
 }
