@@ -9,6 +9,7 @@ import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
 import IconSelector from "./IconSelector";
+import { Droppable } from "react-beautiful-dnd";
 
 export default function Sidebar() {
   const { folders, selectedFolderId, setSelectedFolderId, addFolder } = useNoteStore();
@@ -47,24 +48,31 @@ export default function Sidebar() {
           )} />
         </CollapsibleTrigger>
 
-        <button
-          onClick={() => setSelectedFolderId(null)}
-          className={cn(
-            "w-full flex items-center transition-colors rounded-lg text-sm mb-6",
-            isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
-            selectedFolderId === null
-              ? "bg-primary/10 text-primary"
-              : "text-gray-600 hover:bg-gray-100"
+        <Droppable droppableId="all-notes">
+          {(provided) => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              <button
+                onClick={() => setSelectedFolderId(null)}
+                className={cn(
+                  "w-full flex items-center transition-colors rounded-lg text-sm mb-6",
+                  isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
+                  selectedFolderId === null
+                    ? "bg-primary/10 text-primary"
+                    : "text-gray-600 hover:bg-gray-100"
+                )}
+              >
+                <span className={cn(
+                  "flex items-center justify-center",
+                  !isExpanded && "w-full"
+                )}>
+                  <Inbox className="w-4 h-4" />
+                </span>
+                {isExpanded && <span>All Notes</span>}
+              </button>
+              {provided.placeholder}
+            </div>
           )}
-        >
-          <span className={cn(
-            "flex items-center justify-center",
-            !isExpanded && "w-full"
-          )}>
-            <Inbox className="w-4 h-4" />
-          </span>
-          {isExpanded && <span>All Notes</span>}
-        </button>
+        </Droppable>
 
         <div className="flex items-center justify-between mb-4">
           {isExpanded && <h2 className="text-sm font-medium text-gray-500">Folders</h2>}
@@ -96,25 +104,31 @@ export default function Sidebar() {
 
         <nav className="space-y-1">
           {folders.map((folder) => (
-            <button
-              key={folder.id}
-              onClick={() => setSelectedFolderId(folder.id)}
-              className={cn(
-                "w-full flex items-center transition-colors rounded-lg text-sm",
-                isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
-                selectedFolderId === folder.id
-                  ? "bg-primary/10 text-primary"
-                  : "text-gray-600 hover:bg-gray-100"
+            <Droppable key={folder.id} droppableId={folder.id}>
+              {(provided) => (
+                <div ref={provided.innerRef} {...provided.droppableProps}>
+                  <button
+                    onClick={() => setSelectedFolderId(folder.id)}
+                    className={cn(
+                      "w-full flex items-center transition-colors rounded-lg text-sm",
+                      isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
+                      selectedFolderId === folder.id
+                        ? "bg-primary/10 text-primary"
+                        : "text-gray-600 hover:bg-gray-100"
+                    )}
+                  >
+                    <span className={cn(
+                      "flex items-center justify-center",
+                      !isExpanded && "w-full"
+                    )}>
+                      <Book className="w-4 h-4" />
+                    </span>
+                    {isExpanded && <span>{folder.name}</span>}
+                  </button>
+                  {provided.placeholder}
+                </div>
               )}
-            >
-              <span className={cn(
-                "flex items-center justify-center",
-                !isExpanded && "w-full"
-              )}>
-                <Book className="w-4 h-4" />
-              </span>
-              {isExpanded && <span>{folder.name}</span>}
-            </button>
+            </Droppable>
           ))}
         </nav>
 
