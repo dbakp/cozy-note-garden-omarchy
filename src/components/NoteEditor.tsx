@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Note } from "@/lib/types";
+import { useNoteStore } from "@/lib/store";
 
 interface NoteEditorProps {
   note?: Note;
@@ -8,6 +9,11 @@ interface NoteEditorProps {
 export default function NoteEditor({ note }: NoteEditorProps) {
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");
+
+  useEffect(() => {
+    setTitle(note?.title || "");
+    setContent(note?.content || "");
+  }, [note]);
 
   if (!note) {
     return (
