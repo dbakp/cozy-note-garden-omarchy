@@ -18,7 +18,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   if (!note) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-400">
-        Select a note to start editing
+        Click the + button to create a new note
       </div>
     );
   }
@@ -32,6 +32,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Note title"
           className="w-full text-xl font-medium focus:outline-none"
+          autoFocus
         />
       </div>
       <div className="flex-1 p-4">
