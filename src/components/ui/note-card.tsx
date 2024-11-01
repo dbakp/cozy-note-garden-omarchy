@@ -13,6 +13,8 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
     ? note.content
         .replace(/<[^>]+>/g, '') // Remove HTML tags
         .split(/\r?\n/)[0] // Get first line (handles both \n and \r\n)
+        .split('<p>')[0] // Additional split to handle TipTap paragraphs
+        .split('<br>')[0] // Handle any BR tags
         .trim() // Remove leading/trailing whitespace
         .substring(0, 100) // Limit to 100 characters
     : "No content";
