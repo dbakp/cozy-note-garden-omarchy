@@ -37,6 +37,7 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
 
   // Filter out the current folder from available move options
   const availableFolders = folders.filter(f => f.id !== note.folderId);
+  const hasAvailableDestinations = note.folderId || availableFolders.length > 0;
 
   return (
     <div
@@ -62,7 +63,7 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
           <span>{formatDistanceToNow(note.updatedAt, { addSuffix: true })}</span>
         </div>
       </div>
-      {showMoveIcon && (
+      {showMoveIcon && hasAvailableDestinations && (
         <Popover>
           <PopoverTrigger asChild>
             <Button
