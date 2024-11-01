@@ -4,7 +4,7 @@ import NoteCard from "./ui/note-card";
 import { Plus, Search } from "lucide-react";
 import { useNoteStore } from "@/lib/store";
 import { Button } from "./ui/button";
-import { Droppable, Draggable, DragDropContext } from "react-beautiful-dnd";
+import { Droppable, Draggable } from "react-beautiful-dnd";
 
 interface NotesListProps {
   onNoteSelect: (note: Note) => void;
@@ -12,7 +12,7 @@ interface NotesListProps {
 }
 
 export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps) {
-  const { notes, addNote, selectedTag, selectedFolderId, updateNote } = useNoteStore();
+  const { notes, addNote, selectedTag, selectedFolderId } = useNoteStore();
 
   const handleCreateNewNote = () => {
     const newNote = {
@@ -38,66 +38,52 @@ export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps
     return !note.folderId;
   });
 
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-
-    const noteId = result.draggableId;
-    const destinationFolderId = result.destination.droppableId === "all-notes" ? null : result.destination.droppableId;
-    
-    const note = notes.find(n => n.id === noteId);
-    if (note) {
-      updateNote(noteId, { ...note, folderId: destinationFolderId });
-    }
-  };
-
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="w-80 border-r h-screen flex flex-col">
-        <div className="p-4 border-b">
-          <div className="flex items-center space-x-2 mb-4">
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search notes..."
-                className="w-full pl-9 pr-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-            <Button variant="outline" size="icon" onClick={handleCreateNewNote}>
-              <Plus className="w-4 h-4" />
-            </Button>
+    <div className="w-80 border-r h-screen flex flex-col">
+      <div className="p-4 border-b">
+        <div className="flex items-center space-x-2 mb-4">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search notes..."
+              className="w-full pl-9 pr-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
           </div>
+          <Button variant="outline" size="icon" onClick={handleCreateNewNote}>
+            <Plus className="w-4 h-4" />
+          </Button>
         </div>
-
-        <Droppable droppableId={selectedFolderId || "all-notes"}>
-          {(provided) => (
-            <div 
-              className="flex-1 overflow-y-auto"
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-              {filteredNotes.map((note, index) => (
-                <Draggable key={note.id} draggableId={note.id} index={index}>
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <NoteCard
-                        note={note}
-                        isSelected={selectedNote?.id === note.id}
-                        onClick={() => onNoteSelect(note)}
-                      />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
       </div>
-    </DragDropContext>
+
+      <Droppable droppableId={selectedFolderId || "all-notes"}>
+        {(provided) => (
+          <div 
+            className="flex-1 overflow-y-auto"
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+          >
+            {filteredNotes.map((note, index) => (
+              <Draggable key={note.id} draggableId={note.id} index={index}>
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                  >
+                    <NoteCard
+                      note={note}
+                      isSelected={selectedNote?.id === note.id}
+                      onClick={() => onNoteSelect(note)}
+                    />
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </div>
   );
 }
