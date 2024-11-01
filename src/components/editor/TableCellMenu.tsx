@@ -26,10 +26,13 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
     let content = '';
     
     if (format === 'html') {
-      // Use innerHTML from the DOM instead of toHTML
+      // Create a temporary element to get HTML content
       const tempDiv = document.createElement('div');
-      tempDiv.appendChild(table.content.content.toDOM());
-      content = tempDiv.innerHTML;
+      const fragment = table.type.createChecked(table.attrs, table.content);
+      const dom = editor.view.nodeDOM(editor.state.selection.$anchor.before(1)) as HTMLElement;
+      if (dom) {
+        content = dom.outerHTML;
+      }
     } else if (format === 'markdown') {
       content = table.textContent;
     } else if (format === 'csv') {
