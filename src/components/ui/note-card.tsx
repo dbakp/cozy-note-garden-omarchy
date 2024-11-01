@@ -35,6 +35,9 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
     moveNoteToFolder(note.id, folderId);
   };
 
+  // Filter out the current folder from available move options
+  const availableFolders = folders.filter(f => f.id !== note.folderId);
+
   return (
     <div
       onClick={onClick}
@@ -72,15 +75,17 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
           </PopoverTrigger>
           <PopoverContent className="w-48">
             <div className="space-y-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start"
-                onClick={() => handleMoveToFolder(undefined)}
-              >
-                Move to All Notes
-              </Button>
-              {folders.map((folder) => (
+              {note.folderId && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start"
+                  onClick={() => handleMoveToFolder(undefined)}
+                >
+                  Move to All Notes
+                </Button>
+              )}
+              {availableFolders.map((folder) => (
                 <Button
                   key={folder.id}
                   variant="ghost"
