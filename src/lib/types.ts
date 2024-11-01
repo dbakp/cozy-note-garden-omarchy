@@ -2,13 +2,13 @@ export interface Note {
   id: string;
   title: string;
   content: string;
-  category: string;
+  folderId?: string;
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface Category {
+export interface Folder {
   id: string;
   name: string;
   icon: string;

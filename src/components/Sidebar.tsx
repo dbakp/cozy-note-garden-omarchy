@@ -1,31 +1,31 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Category } from "@/lib/types";
-import { Hash, Inbox, Star, Archive, ChevronRight } from "lucide-react";
+import { Folder } from "@/lib/types";
+import { Book, FolderPlus, ChevronRight } from "lucide-react";
 import Tags from "./Tags";
 import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
-
-const defaultCategories: Category[] = [
-  { id: "1", name: "All Notes", icon: "inbox" },
-  { id: "2", name: "Favorites", icon: "star" },
-  { id: "3", name: "Archive", icon: "archive" },
-];
+import { useNoteStore } from "@/lib/store";
+import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Input } from "./ui/input";
+import IconSelector from "./IconSelector";
 
 export default function Sidebar() {
-  const [categories, setCategories] = useState<Category[]>(defaultCategories);
-  const [selectedCategory, setSelectedCategory] = useState<string>("1");
+  const { folders, selectedFolderId, setSelectedFolderId, addFolder } = useNoteStore();
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [selectedIcon, setSelectedIcon] = useState("book");
 
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case "inbox":
-        return <Inbox className="w-4 h-4" />;
-      case "star":
-        return <Star className="w-4 h-4" />;
-      case "archive":
-        return <Archive className="w-4 h-4" />;
-      default:
-        return <Hash className="w-4 h-4" />;
+  const handleCreateFolder = () => {
+    if (newFolderName.trim()) {
+      addFolder({
+        name: newFolderName.trim(),
+        icon: selectedIcon,
+      });
+      setNewFolderName("");
+      setSelectedIcon("book");
+      setIsCreateFolderOpen(false);
     }
   };
 
@@ -47,15 +47,43 @@ export default function Sidebar() {
           )} />
         </CollapsibleTrigger>
 
+        <div className="flex items-center justify-between mb-4">
+          {isExpanded && <h2 className="text-sm font-medium text-gray-500">Folders</h2>}
+          <Dialog open={isCreateFolderOpen} onOpenChange={setIsCreateFolderOpen}>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="icon" className={cn(!isExpanded && "mx-auto")}>
+                <FolderPlus className="w-4 h-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Folder</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Input
+                  placeholder="Folder name"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                />
+                <IconSelector
+                  selectedIcon={selectedIcon}
+                  onSelectIcon={setSelectedIcon}
+                />
+                <Button onClick={handleCreateFolder}>Create Folder</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
         <nav className="space-y-1">
-          {categories.map((category) => (
+          {folders.map((folder) => (
             <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
+              key={folder.id}
+              onClick={() => setSelectedFolderId(selectedFolderId === folder.id ? null : folder.id)}
               className={cn(
                 "w-full flex items-center transition-colors rounded-lg text-sm",
                 isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
-                selectedCategory === category.id
+                selectedFolderId === folder.id
                   ? "bg-primary/10 text-primary"
                   : "text-gray-600 hover:bg-gray-100"
               )}
@@ -64,9 +92,9 @@ export default function Sidebar() {
                 "flex items-center justify-center",
                 !isExpanded && "w-full"
               )}>
-                {getIcon(category.icon)}
+                <Book className="w-4 h-4" />
               </span>
-              {isExpanded && <span>{category.name}</span>}
+              {isExpanded && <span>{folder.name}</span>}
             </button>
           ))}
         </nav>
