@@ -5,9 +5,13 @@ import { Plus, Search } from "lucide-react";
 import { useNoteStore } from "@/lib/store";
 import { Button } from "./ui/button";
 
-export default function NotesList() {
+interface NotesListProps {
+  onNoteSelect: (note: Note) => void;
+  selectedNote?: Note;
+}
+
+export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps) {
   const { notes, addNote } = useNoteStore();
-  const [selectedNote, setSelectedNote] = useState<string | null>(null);
 
   const handleCreateNewNote = () => {
     const newNote = {
@@ -18,7 +22,9 @@ export default function NotesList() {
     
     addNote(newNote);
     // Select the newly created note (it will be the first one in the list)
-    setSelectedNote(notes[0]?.id);
+    if (notes.length > 0) {
+      onNoteSelect(notes[0]);
+    }
   };
 
   return (
@@ -44,8 +50,8 @@ export default function NotesList() {
           <NoteCard
             key={note.id}
             note={note}
-            isSelected={selectedNote === note.id}
-            onClick={() => setSelectedNote(note.id)}
+            isSelected={selectedNote?.id === note.id}
+            onClick={() => onNoteSelect(note)}
           />
         ))}
       </div>
