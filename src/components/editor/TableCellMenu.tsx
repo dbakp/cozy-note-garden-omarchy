@@ -11,6 +11,7 @@ import {
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, AlignLeft, ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Plus, Trash, Copy } from 'lucide-react';
+import { useToast } from "@/components/ui/use-toast";
 
 interface TableCellMenuProps {
   editor: Editor;
@@ -18,12 +19,17 @@ interface TableCellMenuProps {
 }
 
 export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) {
+  const { toast } = useToast();
+
   const copyTableAs = (format: 'markdown' | 'html' | 'csv') => {
     const table = editor.state.selection.$anchor.node(1);
     let content = '';
     
     if (format === 'html') {
-      content = table.toHTML();
+      // Use innerHTML from the DOM instead of toHTML
+      const tempDiv = document.createElement('div');
+      tempDiv.appendChild(table.content.content.toDOM());
+      content = tempDiv.innerHTML;
     } else if (format === 'markdown') {
       content = table.textContent;
     } else if (format === 'csv') {
@@ -38,6 +44,10 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
     }
     
     navigator.clipboard.writeText(content);
+    toast({
+      title: "Copied to clipboard",
+      description: `Table copied as ${format.toUpperCase()}`,
+    });
   };
 
   return (
@@ -97,19 +107,31 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={() => editor.chain().focus().moveRowUp().run()}>
+        <DropdownMenuItem onClick={() => {
+          editor.chain().focus().addRowBefore().deleteRow().run();
+          toast({ description: "Row moved up" });
+        }}>
           <ArrowUp className="h-4 w-4 mr-2" />
           Move Row Up
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => editor.chain().focus().moveRowDown().run()}>
+        <DropdownMenuItem onClick={() => {
+          editor.chain().focus().addRowAfter().deleteRow().run();
+          toast({ description: "Row moved down" });
+        }}>
           <ArrowDown className="h-4 w-4 mr-2" />
           Move Row Down
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => editor.chain().focus().moveColumnLeft().run()}>
+        <DropdownMenuItem onClick={() => {
+          editor.chain().focus().addColumnBefore().deleteColumn().run();
+          toast({ description: "Column moved left" });
+        }}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Move Column Left
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => editor.chain().focus().moveColumnRight().run()}>
+        <DropdownMenuItem onClick={() => {
+          editor.chain().focus().addColumnAfter().deleteColumn().run();
+          toast({ description: "Column moved right" });
+        }}>
           <ArrowRight className="h-4 w-4 mr-2" />
           Move Column Right
         </DropdownMenuItem>
