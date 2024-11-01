@@ -76,9 +76,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   const handleImageUpload = async () => {
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: {
-          cursor: "always"
-        },
+        video: true,
         audio: false
       });
       
