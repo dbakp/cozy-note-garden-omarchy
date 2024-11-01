@@ -12,8 +12,8 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
   const contentPreview = note.content
     .replace(/<[^>]+>/g, '') // Remove HTML tags
     .split(/\r?\n/)[0] // Get first line (handles both \n and \r\n)
-    .slice(0, 100) // Limit to 100 characters
-    .trim();
+    .trim() // Remove leading/trailing whitespace
+    .slice(0, 100); // Limit to 100 characters
   
   return (
     <button
