@@ -8,8 +8,11 @@ interface NoteCardProps {
 }
 
 export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
-  // Remove HTML tags from content for preview
-  const contentPreview = note.content.replace(/<[^>]+>/g, '');
+  // Remove HTML tags from content and get first line only
+  const contentPreview = note.content
+    .replace(/<[^>]+>/g, '')
+    .split('\n')[0]
+    .trim();
   
   return (
     <button

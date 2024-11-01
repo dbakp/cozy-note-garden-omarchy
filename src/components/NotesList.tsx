@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Note } from "@/lib/types";
 import NoteCard from "./ui/note-card";
 import { Plus, Search } from "lucide-react";
@@ -24,6 +24,7 @@ export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps
     // Select the newly created note (it will be the first one in the list)
     if (notes.length > 0) {
       onNoteSelect(notes[0]);
+      // The title input will be focused via the useEffect in NoteEditor
     }
   };
 

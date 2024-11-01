@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Note } from "@/lib/types";
 import { useNoteStore } from "@/lib/store";
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -25,6 +25,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   const [title, setTitle] = useState(note?.title || "");
   const { toast } = useToast();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
     extensions: [
@@ -64,6 +65,10 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   useEffect(() => {
     setTitle(note?.title || "");
     editor?.commands.setContent(note?.content || "");
+    // Focus the title input when a new note is created
+    if (note && !note.title && titleInputRef.current) {
+      titleInputRef.current.focus();
+    }
   }, [note, editor]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,12 +139,12 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     <div className="flex-1 flex flex-col h-screen relative">
       <div className="border-b p-4">
         <input
+          ref={titleInputRef}
           type="text"
           value={title}
           onChange={handleTitleChange}
           placeholder="Note title"
           className="w-full text-xl font-medium focus:outline-none"
-          autoFocus
         />
       </div>
       <EditorToolbar 
