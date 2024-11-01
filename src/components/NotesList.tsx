@@ -35,7 +35,8 @@ export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps
     if (selectedFolderId) {
       return note.folderId === selectedFolderId;
     }
-    return !note.folderId;
+    // Show notes without a folderId in "All Notes"
+    return !note.folderId || note.folderId === undefined;
   });
 
   return (
