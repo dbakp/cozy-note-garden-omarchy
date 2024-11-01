@@ -8,16 +8,24 @@ interface NoteCardProps {
 }
 
 export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
-  // Get only the first line of content without HTML tags
-  const contentPreview = note.content
-    ? note.content
-        .replace(/<[^>]+>/g, '') // Remove HTML tags
-        .split(/\r?\n/)[0] // Get first line (handles both \n and \r\n)
-        .split('<p>')[0] // Additional split to handle TipTap paragraphs
-        .split('<br>')[0] // Handle any BR tags
-        .trim() // Remove leading/trailing whitespace
-        .substring(0, 100) // Limit to 100 characters
-    : "No content";
+  const getContentPreview = (content: string | null): string => {
+    if (!content) return "No content";
+    
+    // First remove all HTML tags
+    const withoutTags = content.replace(/<[^>]*>/g, ' ');
+    
+    // Split by any type of line break and get first line
+    const lines = withoutTags.split(/[\n\r]+/);
+    const firstLine = lines[0] || '';
+    
+    // Clean up extra spaces and limit length
+    return firstLine
+      .replace(/\s+/g, ' ')
+      .trim()
+      .substring(0, 100);
+  };
+  
+  const contentPreview = getContentPreview(note.content);
   
   return (
     <button
