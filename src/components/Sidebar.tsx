@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Category } from "@/lib/types";
 import { Hash, Inbox, Star, Archive, ChevronRight } from "lucide-react";
 import Tags from "./Tags";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
+import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
 
 const defaultCategories: Category[] = [
   { id: "1", name: "All Notes", icon: "inbox" },
@@ -53,7 +53,8 @@ export default function Sidebar() {
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
               className={cn(
-                "w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-colors",
+                "w-full flex items-center transition-colors rounded-lg text-sm",
+                isExpanded ? "px-3 py-2 space-x-2" : "p-2 justify-center",
                 selectedCategory === category.id
                   ? "bg-primary/10 text-primary"
                   : "text-gray-600 hover:bg-gray-100"
