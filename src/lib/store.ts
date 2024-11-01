@@ -39,6 +39,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
         ...state.notes,
       ],
     })),
+
   updateNote: (id, updates) =>
     set((state) => {
       const updatedNotes = state.notes.map((note) =>
@@ -57,18 +58,21 @@ export const useNoteStore = create<NoteStore>((set) => ({
         tags: Array.from(allTags).sort(),
       };
     }),
+
   addFolder: (folder) =>
     set((state) => ({
       folders: [...state.folders, { ...folder, id: crypto.randomUUID() }].sort((a, b) => 
         a.name.localeCompare(b.name)
       ),
     })),
+
   updateFolder: (id, updates) =>
     set((state) => ({
       folders: state.folders.map((folder) =>
         folder.id === id ? { ...folder, ...updates } : folder
       ).sort((a, b) => a.name.localeCompare(b.name)),
     })),
+
   deleteFolder: (id) =>
     set((state) => ({
       folders: state.folders.filter((folder) => folder.id !== id),
@@ -76,12 +80,14 @@ export const useNoteStore = create<NoteStore>((set) => ({
         note.folderId === id ? { ...note, folderId: undefined } : note
       ),
     })),
+
   addTag: (tag) =>
     set((state) => ({
       tags: state.tags.includes(tag) 
         ? state.tags 
         : [...state.tags, tag].sort(),
     })),
+
   setSelectedTag: (tag) => set({ selectedTag: tag }),
   setSelectedFolderId: (id) => set({ selectedFolderId: id }),
 
@@ -104,10 +110,13 @@ export const useNoteStore = create<NoteStore>((set) => ({
           // Update content
           let updatedContent = note.content;
           if (updatedContent) {
+            // Ensure oldTag has # prefix for content replacement
+            const oldTagWithHash = oldTag.startsWith('#') ? oldTag : `#${oldTag}`;
+            const newTagWithHash = newTag.startsWith('#') ? newTag : `#${newTag}`;
+            
             const parser = new DOMParser();
             const doc = parser.parseFromString(updatedContent, 'text/html');
             
-            const textNodes = [];
             const walker = document.createTreeWalker(
               doc.body,
               NodeFilter.SHOW_TEXT,
@@ -116,15 +125,13 @@ export const useNoteStore = create<NoteStore>((set) => ({
 
             let node;
             while (node = walker.nextNode()) {
-              textNodes.push(node);
-            }
-
-            const tagRegex = new RegExp(`#${oldTag}(?![\\w-])`, 'g');
-            textNodes.forEach(node => {
               if (node.textContent) {
-                node.textContent = node.textContent.replace(tagRegex, `#${newTag}`);
+                node.textContent = node.textContent.replace(
+                  new RegExp(oldTagWithHash + '(?![\\w-])', 'g'), 
+                  newTagWithHash
+                );
               }
-            });
+            }
 
             updatedContent = doc.body.innerHTML;
           }
@@ -132,8 +139,12 @@ export const useNoteStore = create<NoteStore>((set) => ({
           // Update title
           let updatedTitle = note.title;
           if (updatedTitle) {
-            const tagRegex = new RegExp(`#${oldTag}(?![\\w-])`, 'g');
-            updatedTitle = updatedTitle.replace(tagRegex, `#${newTag}`);
+            const oldTagWithHash = oldTag.startsWith('#') ? oldTag : `#${oldTag}`;
+            const newTagWithHash = newTag.startsWith('#') ? newTag : `#${newTag}`;
+            updatedTitle = updatedTitle.replace(
+              new RegExp(oldTagWithHash + '(?![\\w-])', 'g'),
+              newTagWithHash
+            );
           }
 
           return {
