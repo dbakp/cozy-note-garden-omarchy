@@ -98,12 +98,12 @@ export const useNoteStore = create<NoteStore>((set) => ({
           const updatedTags = note.tags.map(tag => tag === oldTag ? newTag : tag);
           
           // Replace the tag in the content if it exists
-          let updatedContent = note.content;
-          const tagRegex = new RegExp(`#${oldTag}\\b`, 'g');
+          let updatedContent = note.content || '';
+          const tagRegex = new RegExp(`#${oldTag}(?![\\w-])`, 'g');
           updatedContent = updatedContent.replace(tagRegex, `#${newTag}`);
           
           // Replace the tag in the title if it exists
-          let updatedTitle = note.title;
+          let updatedTitle = note.title || '';
           updatedTitle = updatedTitle.replace(tagRegex, `#${newTag}`);
           
           return {
