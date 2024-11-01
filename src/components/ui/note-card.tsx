@@ -8,6 +8,9 @@ interface NoteCardProps {
 }
 
 export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
+  // Remove HTML tags from content for preview
+  const contentPreview = note.content.replace(/<[^>]+>/g, '');
+  
   return (
     <button
       onClick={onClick}
@@ -15,8 +18,8 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
         isSelected ? "bg-primary/5" : "hover:bg-gray-50"
       }`}
     >
-      <h3 className="font-medium text-sm mb-1 truncate">{note.title}</h3>
-      <p className="text-sm text-gray-500 truncate mb-2">{note.content}</p>
+      <h3 className="font-medium text-sm mb-1 truncate">{note.title || "Untitled"}</h3>
+      <div className="text-sm text-gray-500 truncate mb-2">{contentPreview || "No content"}</div>
       <div className="flex items-center text-xs text-gray-400">
         <span>{formatDistanceToNow(note.updatedAt, { addSuffix: true })}</span>
       </div>

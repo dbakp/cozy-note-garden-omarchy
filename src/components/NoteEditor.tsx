@@ -149,7 +149,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
       />
       <div className="flex-1 overflow-auto relative">
         {isMenuVisible && (
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 mt-2">
+          <div className="fixed transform -translate-x-1/2 mt-2" style={{ top: 'calc(var(--menu-top, 0) + 24px)', left: 'var(--menu-left, 50%)' }}>
             <FloatingFormatMenu 
               editor={editor} 
               isVisible={isMenuVisible}
