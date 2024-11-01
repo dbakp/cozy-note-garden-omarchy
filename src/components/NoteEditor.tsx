@@ -3,19 +3,7 @@ import { Note } from "@/lib/types";
 import { useNoteStore } from "@/lib/store";
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
-import TaskList from '@tiptap/extension-task-list';
-import TaskItem from '@tiptap/extension-task-item';
-import Highlight from '@tiptap/extension-highlight';
-import Typography from '@tiptap/extension-typography';
-import Link from '@tiptap/extension-link';
-import Underline from '@tiptap/extension-underline';
-import TextAlign from '@tiptap/extension-text-align';
-import CodeBlock from '@tiptap/extension-code-block';
-import Table from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
+import { editorExtensions } from './editor/EditorExtensions';
 import { useToast } from "./ui/use-toast";
 import FloatingFormatMenu from "./editor/FloatingFormatMenu";
 import EditorToolbar from "./editor/EditorToolbar";
@@ -42,41 +30,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   };
 
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Image,
-      TaskList,
-      TaskItem.configure({
-        nested: true,
-        onReadOnlyChecked: () => true,
-        HTMLAttributes: {
-          class: 'task-item',
-        },
-      }),
-      Highlight,
-      Typography,
-      Link.configure({
-        openOnClick: false,
-      }),
-      Underline,
-      TextAlign.configure({
-        types: ['heading', 'paragraph', 'table'],
-      }),
-      CodeBlock,
-      Table.configure({
-        resizable: true,
-        HTMLAttributes: {
-          class: 'border-collapse table-fixed w-full',
-        },
-      }),
-      TableRow,
-      TableHeader,
-      TableCell.configure({
-        HTMLAttributes: {
-          class: 'border border-border p-2 relative group',
-        },
-      }),
-    ],
+    extensions: editorExtensions,
     content: note?.content || "",
     editorProps: {
       attributes: {
@@ -114,48 +68,6 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     }
   };
 
-  const handleImageUpload = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-        audio: false
-      });
-      
-      const video = document.createElement('video');
-      video.srcObject = stream;
-      await video.play();
-
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx?.drawImage(video, 0, 0);
-
-      const imageUrl = canvas.toDataURL('image/png');
-      stream.getTracks().forEach(track => track.stop());
-      editor?.chain().focus().setImage({ src: imageUrl }).run();
-
-      toast({
-        title: "Screenshot inserted",
-        description: "Your screenshot has been added to the note",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to capture screenshot",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const insertCheckbox = () => {
-    editor?.chain().focus().toggleTaskList().run();
-    toast({
-      title: "Checkbox added",
-      description: "You can now add items to your checklist",
-    });
-  };
-
   if (!note) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-400">
@@ -189,8 +101,6 @@ export default function NoteEditor({ note }: NoteEditorProps) {
       )}
       <EditorToolbar 
         editor={editor} 
-        onImageUpload={handleImageUpload}
-        onInsertCheckbox={insertCheckbox}
         isVisible={isToolbarVisible}
         onHideToolbar={() => setIsToolbarVisible(false)}
       />
