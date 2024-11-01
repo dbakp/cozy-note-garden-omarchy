@@ -2,6 +2,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Category } from "@/lib/types";
 import { Hash, Plus, Inbox, Star, Archive } from "lucide-react";
+import Tags from "./Tags";
 
 const defaultCategories: Category[] = [
   { id: "1", name: "All Notes", icon: "inbox" },
@@ -52,6 +53,10 @@ export default function Sidebar() {
           </button>
         ))}
       </nav>
+
+      <div className="mt-6">
+        <Tags />
+      </div>
     </div>
   );
 }

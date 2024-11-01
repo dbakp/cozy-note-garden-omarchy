@@ -11,22 +11,25 @@ interface NotesListProps {
 }
 
 export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps) {
-  const { notes, addNote } = useNoteStore();
+  const { notes, addNote, selectedTag } = useNoteStore();
 
   const handleCreateNewNote = () => {
     const newNote = {
       title: "",
       content: "",
-      category: "1", // Default category
+      category: "1",
+      tags: [],
     };
     
     addNote(newNote);
-    // Select the newly created note (it will be the first one in the list)
     if (notes.length > 0) {
       onNoteSelect(notes[0]);
-      // The title input will be focused via the useEffect in NoteEditor
     }
   };
+
+  const filteredNotes = selectedTag
+    ? notes.filter(note => note.tags?.includes(selectedTag))
+    : notes;
 
   return (
     <div className="w-80 border-r h-screen flex flex-col">
@@ -47,7 +50,7 @@ export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {notes.map((note) => (
+        {filteredNotes.map((note) => (
           <NoteCard
             key={note.id}
             note={note}

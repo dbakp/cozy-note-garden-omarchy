@@ -35,6 +35,12 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
+  const extractTags = (content: string): string[] => {
+    const regex = /#[\w-]+/g;
+    const matches = content.match(regex) || [];
+    return [...new Set(matches)];
+  };
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -79,7 +85,9 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     },
     onUpdate: ({ editor }) => {
       if (note?.id) {
-        updateNote(note.id, { content: editor.getHTML() });
+        const content = editor.getHTML();
+        const tags = extractTags(editor.getText());
+        updateNote(note.id, { content, tags });
       }
     },
     onSelectionUpdate: ({ editor }) => {
@@ -96,9 +104,13 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   }, [note, editor]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
+    const newTitle = e.target.value;
+    setTitle(newTitle);
     if (note?.id) {
-      updateNote(note.id, { title: e.target.value });
+      const tags = extractTags(newTitle);
+      const existingTags = note.tags || [];
+      const updatedTags = [...new Set([...existingTags, ...tags])];
+      updateNote(note.id, { title: newTitle, tags: updatedTags });
     }
   };
 
