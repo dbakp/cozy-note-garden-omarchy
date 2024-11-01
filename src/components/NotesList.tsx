@@ -1,10 +1,9 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Note } from "@/lib/types";
 import NoteCard from "./ui/note-card";
 import { Plus, Search } from "lucide-react";
 import { useNoteStore } from "@/lib/store";
 import { Button } from "./ui/button";
-import { Droppable, Draggable } from "react-beautiful-dnd";
 
 interface NotesListProps {
   onNoteSelect: (note: Note) => void;
@@ -57,34 +56,16 @@ export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps
         </div>
       </div>
 
-      <Droppable droppableId={selectedFolderId || "all-notes"}>
-        {(provided) => (
-          <div 
-            className="flex-1 overflow-y-auto"
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            {filteredNotes.map((note, index) => (
-              <Draggable key={note.id} draggableId={note.id} index={index}>
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                  >
-                    <NoteCard
-                      note={note}
-                      isSelected={selectedNote?.id === note.id}
-                      onClick={() => onNoteSelect(note)}
-                    />
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+      <div className="flex-1 overflow-y-auto">
+        {filteredNotes.map((note) => (
+          <NoteCard
+            key={note.id}
+            note={note}
+            isSelected={selectedNote?.id === note.id}
+            onClick={() => onNoteSelect(note)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,7 +1,10 @@
 import { Note } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { useNoteStore } from "@/lib/store";
-import { Folder, GripVertical } from "lucide-react";
+import { Folder, Move } from "lucide-react";
+import { useState } from "react";
+import { Button } from "./button";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
 interface NoteCardProps {
   note: Note;
@@ -10,7 +13,8 @@ interface NoteCardProps {
 }
 
 export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
-  const { folders } = useNoteStore();
+  const { folders, moveNoteToFolder } = useNoteStore();
+  const [showMoveIcon, setShowMoveIcon] = useState(false);
   
   const getContentPreview = (content: string | null): string => {
     if (!content) return "No content";
@@ -27,16 +31,19 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
   const contentPreview = getContentPreview(note.content);
   const folder = folders.find(f => f.id === note.folderId);
   
+  const handleMoveToFolder = (folderId: string | undefined) => {
+    moveNoteToFolder(note.id, folderId);
+  };
+
   return (
-    <button
+    <div
       onClick={onClick}
+      onMouseEnter={() => setShowMoveIcon(true)}
+      onMouseLeave={() => setShowMoveIcon(false)}
       className={`group w-full text-left p-4 border-b transition-colors relative ${
         isSelected ? "bg-primary/5" : "hover:bg-gray-50"
       }`}
     >
-      <div className="absolute left-0 top-0 bottom-0 w-8 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing">
-        <GripVertical className="w-4 h-4 text-gray-400" />
-      </div>
       <div className="pl-6">
         <div className="flex items-center justify-between mb-1">
           <h3 className="font-medium text-sm truncate">{note.title || "Untitled"}</h3>
@@ -52,6 +59,42 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
           <span>{formatDistanceToNow(note.updatedAt, { addSuffix: true })}</span>
         </div>
       </div>
-    </button>
+      {showMoveIcon && (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute right-2 top-2"
+            >
+              <Move className="w-4 h-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-48">
+            <div className="space-y-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start"
+                onClick={() => handleMoveToFolder(undefined)}
+              >
+                Move to All Notes
+              </Button>
+              {folders.map((folder) => (
+                <Button
+                  key={folder.id}
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start"
+                  onClick={() => handleMoveToFolder(folder.id)}
+                >
+                  Move to {folder.name}
+                </Button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+      )}
+    </div>
   );
 }

@@ -15,6 +15,7 @@ interface NoteStore {
   addTag: (tag: string) => void;
   setSelectedTag: (tag: string | null) => void;
   setSelectedFolderId: (id: string | null) => void;
+  moveNoteToFolder: (noteId: string, folderId: string | undefined) => void;
 }
 
 export const useNoteStore = create<NoteStore>((set) => ({
@@ -81,4 +82,10 @@ export const useNoteStore = create<NoteStore>((set) => ({
     })),
   setSelectedTag: (tag) => set({ selectedTag: tag }),
   setSelectedFolderId: (id) => set({ selectedFolderId: id }),
+  moveNoteToFolder: (noteId, folderId) =>
+    set((state) => ({
+      notes: state.notes.map((note) =>
+        note.id === noteId ? { ...note, folderId, updatedAt: new Date() } : note
+      ),
+    })),
 }));
