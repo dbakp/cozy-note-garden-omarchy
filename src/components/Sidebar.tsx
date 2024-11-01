@@ -54,13 +54,18 @@ export default function Sidebar() {
               onClick={() => setSelectedCategory(category.id)}
               className={cn(
                 "w-full flex items-center transition-colors rounded-lg text-sm",
-                isExpanded ? "px-3 py-2 space-x-2" : "w-12 h-10 justify-center",
+                isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
                 selectedCategory === category.id
                   ? "bg-primary/10 text-primary"
                   : "text-gray-600 hover:bg-gray-100"
               )}
             >
-              <span className={cn("flex-shrink-0", !isExpanded && "mx-auto")}>{getIcon(category.icon)}</span>
+              <span className={cn(
+                "flex items-center justify-center",
+                !isExpanded && "w-full"
+              )}>
+                {getIcon(category.icon)}
+              </span>
               {isExpanded && <span>{category.name}</span>}
             </button>
           ))}
