@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Category } from "@/lib/types";
-import { Hash, Plus, Inbox, Star, Archive } from "lucide-react";
+import { Hash, Inbox, Star, Archive, ChevronRight } from "lucide-react";
 import Tags from "./Tags";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 
 const defaultCategories: Category[] = [
   { id: "1", name: "All Notes", icon: "inbox" },
@@ -13,6 +14,7 @@ const defaultCategories: Category[] = [
 export default function Sidebar() {
   const [categories, setCategories] = useState<Category[]>(defaultCategories);
   const [selectedCategory, setSelectedCategory] = useState<string>("1");
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -28,35 +30,47 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="w-64 border-r h-screen p-4 flex flex-col">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold text-primary">Notes</h1>
-        <button className="text-gray-500 hover:text-primary transition-colors">
-          <Plus className="w-5 h-5" />
-        </button>
-      </div>
-      
-      <nav className="space-y-1">
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => setSelectedCategory(category.id)}
-            className={cn(
-              "w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-colors",
-              selectedCategory === category.id
-                ? "bg-primary/10 text-primary"
-                : "text-gray-600 hover:bg-gray-100"
-            )}
-          >
-            {getIcon(category.icon)}
-            <span>{category.name}</span>
-          </button>
-        ))}
-      </nav>
+    <Collapsible
+      open={isExpanded}
+      onOpenChange={setIsExpanded}
+      className={cn(
+        "border-r h-screen transition-all duration-300",
+        isExpanded ? "w-64" : "w-12"
+      )}
+    >
+      <div className="p-4">
+        <CollapsibleTrigger className="w-full flex items-center justify-between mb-6">
+          {isExpanded && <h1 className="text-xl font-semibold text-primary">Notes</h1>}
+          <ChevronRight className={cn(
+            "w-5 h-5 transition-transform",
+            isExpanded ? "rotate-180" : "rotate-0"
+          )} />
+        </CollapsibleTrigger>
 
-      <div className="mt-6">
-        <Tags />
+        <CollapsibleContent className="space-y-1">
+          <nav className="space-y-1">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={cn(
+                  "w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-colors",
+                  selectedCategory === category.id
+                    ? "bg-primary/10 text-primary"
+                    : "text-gray-600 hover:bg-gray-100"
+                )}
+              >
+                {getIcon(category.icon)}
+                <span>{category.name}</span>
+              </button>
+            ))}
+          </nav>
+
+          <div className="mt-6">
+            <Tags />
+          </div>
+        </CollapsibleContent>
       </div>
-    </div>
+    </Collapsible>
   );
 }
