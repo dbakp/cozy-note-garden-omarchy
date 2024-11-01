@@ -1,7 +1,7 @@
 import { Note } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { useNoteStore } from "@/lib/store";
-import { Folder, Move } from "lucide-react";
+import { Folder, ArrowRightToLine } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./button";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
@@ -48,7 +48,7 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
         <div className="flex items-center justify-between mb-1">
           <h3 className="font-medium text-sm truncate">{note.title || "Untitled"}</h3>
           {folder && (
-            <div className="flex items-center text-xs text-gray-500 gap-1">
+            <div className="flex items-center text-xs text-gray-500 gap-1 mr-8">
               <Folder className="w-3 h-3" />
               <span>{folder.name}</span>
             </div>
@@ -65,9 +65,9 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="absolute right-2 top-2"
+              className="absolute right-2 top-1/2 -translate-y-1/2"
             >
-              <Move className="w-4 h-4" />
+              <ArrowRightToLine className="w-4 h-4" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-48">
