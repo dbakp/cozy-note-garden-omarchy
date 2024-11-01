@@ -11,17 +11,17 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
   const getContentPreview = (content: string | null): string => {
     if (!content) return "No content";
     
-    // Remove all HTML tags and decode HTML entities
+    // Create temporary element to parse HTML
     const div = document.createElement('div');
     div.innerHTML = content;
-    const textContent = div.textContent || div.innerText || '';
     
-    // Split by newlines and get first non-empty line
-    const lines = textContent.split(/\n/);
-    const firstLine = lines.find(line => line.trim().length > 0) || '';
+    // Get all paragraphs
+    const paragraphs = div.getElementsByTagName('p');
     
-    // Clean up and limit length
-    return firstLine.trim().substring(0, 100);
+    // Get text from first paragraph only, or empty string if none exist
+    const firstParagraph = paragraphs[0]?.textContent || '';
+    
+    return firstParagraph.trim().substring(0, 100);
   };
   
   const contentPreview = getContentPreview(note.content);
