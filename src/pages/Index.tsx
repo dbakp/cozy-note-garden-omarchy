@@ -5,10 +5,12 @@ import NoteEditor from "@/components/NoteEditor";
 import { Note } from "@/lib/types";
 import { DragDropContext } from "react-beautiful-dnd";
 import { useNoteStore } from "@/lib/store";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Index() {
   const [selectedNote, setSelectedNote] = useState<Note | undefined>();
   const { updateNote } = useNoteStore();
+  const { toast } = useToast();
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -16,7 +18,12 @@ export default function Index() {
     const noteId = result.draggableId;
     const destinationFolderId = result.destination.droppableId === "all-notes" ? null : result.destination.droppableId;
     
-    const note = updateNote(noteId, { folderId: destinationFolderId });
+    updateNote(noteId, { folderId: destinationFolderId });
+    
+    toast({
+      title: "Note moved",
+      description: destinationFolderId ? "Note moved to folder" : "Note moved to All Notes",
+    });
   };
 
   return (
