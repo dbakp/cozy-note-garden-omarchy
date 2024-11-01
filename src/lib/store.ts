@@ -92,11 +92,30 @@ export const useNoteStore = create<NoteStore>((set) => ({
   updateTag: (oldTag, newTag) =>
     set((state) => {
       // Update all notes that contain the old tag
-      const updatedNotes = state.notes.map(note => ({
-        ...note,
-        tags: note.tags.map(tag => tag === oldTag ? newTag : tag),
-        updatedAt: note.tags.includes(oldTag) ? new Date() : note.updatedAt
-      }));
+      const updatedNotes = state.notes.map(note => {
+        if (note.tags.includes(oldTag)) {
+          // Replace the tag in the tags array
+          const updatedTags = note.tags.map(tag => tag === oldTag ? newTag : tag);
+          
+          // Replace the tag in the content if it exists
+          let updatedContent = note.content;
+          const tagRegex = new RegExp(`#${oldTag}\\b`, 'g');
+          updatedContent = updatedContent.replace(tagRegex, `#${newTag}`);
+          
+          // Replace the tag in the title if it exists
+          let updatedTitle = note.title;
+          updatedTitle = updatedTitle.replace(tagRegex, `#${newTag}`);
+          
+          return {
+            ...note,
+            tags: updatedTags,
+            content: updatedContent,
+            title: updatedTitle,
+            updatedAt: new Date()
+          };
+        }
+        return note;
+      });
 
       // Update the tags array
       const allTags = new Set<string>();
