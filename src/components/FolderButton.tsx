@@ -1,0 +1,48 @@
+import { Book } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface FolderButtonProps {
+  name: string;
+  count: number;
+  isSelected: boolean;
+  isExpanded: boolean;
+  onClick: () => void;
+  icon?: React.ReactNode;
+}
+
+export function FolderButton({ 
+  name, 
+  count, 
+  isSelected, 
+  isExpanded, 
+  onClick,
+  icon = <Book className="w-4 h-4" />
+}: FolderButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "w-full flex items-center transition-colors rounded-lg text-sm",
+        isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
+        isSelected 
+          ? "bg-primary/10 text-primary hover:bg-primary/15" 
+          : "text-gray-600 hover:bg-gray-100"
+      )}
+    >
+      <span className={cn(
+        "flex items-center justify-center",
+        !isExpanded && "w-full"
+      )}>
+        {icon}
+      </span>
+      {isExpanded && (
+        <>
+          <span className="flex-1 text-left">{name}</span>
+          <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+            {count}
+          </span>
+        </>
+      )}
+    </button>
+  );
+}

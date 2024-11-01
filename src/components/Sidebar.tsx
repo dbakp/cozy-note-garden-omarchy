@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Book, FolderPlus, ChevronRight, Inbox } from "lucide-react";
+import { FolderPlus, ChevronRight, Inbox } from "lucide-react";
 import Tags from "./Tags";
 import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
 import { useNoteStore } from "@/lib/store";
@@ -9,9 +9,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "./ui/input";
 import IconSelector from "./IconSelector";
 import { Droppable } from "react-beautiful-dnd";
+import { FolderButton } from "./FolderButton";
 
 export default function Sidebar() {
-  const { folders, selectedFolderId, setSelectedFolderId, addFolder } = useNoteStore();
+  const { folders, notes, selectedFolderId, setSelectedFolderId, addFolder } = useNoteStore();
   const [isExpanded, setIsExpanded] = useState(true);
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
@@ -28,6 +29,13 @@ export default function Sidebar() {
       setIsCreateFolderOpen(false);
     }
   };
+
+  // Calculate note counts
+  const allNotesCount = notes.filter(note => !note.folderId).length;
+  const folderCounts = folders.reduce((acc, folder) => {
+    acc[folder.id] = notes.filter(note => note.folderId === folder.id).length;
+    return acc;
+  }, {} as Record<string, number>);
 
   return (
     <Collapsible
@@ -58,22 +66,14 @@ export default function Sidebar() {
                 "rounded-lg transition-colors",
                 snapshot.isDraggingOver && "bg-primary/5"
               )}>
-                <button
+                <FolderButton
+                  name="All Notes"
+                  count={allNotesCount}
+                  isSelected={selectedFolderId === null}
+                  isExpanded={isExpanded}
                   onClick={() => setSelectedFolderId(null)}
-                  className={cn(
-                    "w-full flex items-center transition-colors rounded-lg text-sm",
-                    isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
-                    selectedFolderId === null ? "text-primary" : "text-gray-600 hover:bg-gray-100"
-                  )}
-                >
-                  <span className={cn(
-                    "flex items-center justify-center",
-                    !isExpanded && "w-full"
-                  )}>
-                    <Inbox className="w-4 h-4" />
-                  </span>
-                  {isExpanded && <span>All Notes</span>}
-                </button>
+                  icon={<Inbox className="w-4 h-4" />}
+                />
               </div>
               {provided.placeholder}
             </div>
@@ -120,22 +120,13 @@ export default function Sidebar() {
                     "rounded-lg transition-colors",
                     snapshot.isDraggingOver && "bg-primary/5"
                   )}>
-                    <button
+                    <FolderButton
+                      name={folder.name}
+                      count={folderCounts[folder.id]}
+                      isSelected={selectedFolderId === folder.id}
+                      isExpanded={isExpanded}
                       onClick={() => setSelectedFolderId(folder.id)}
-                      className={cn(
-                        "w-full flex items-center transition-colors rounded-lg text-sm",
-                        isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
-                        selectedFolderId === folder.id ? "text-primary" : "text-gray-600 hover:bg-gray-100"
-                      )}
-                    >
-                      <span className={cn(
-                        "flex items-center justify-center",
-                        !isExpanded && "w-full"
-                      )}>
-                        <Book className="w-4 h-4" />
-                      </span>
-                      {isExpanded && <span>{folder.name}</span>}
-                    </button>
+                    />
                   </div>
                   {provided.placeholder}
                 </div>
