@@ -16,6 +16,7 @@ interface NoteStore {
   setSelectedTag: (tag: string | null) => void;
   setSelectedFolderId: (id: string | null) => void;
   moveNoteToFolder: (noteId: string, folderId: string | undefined) => void;
+
   updateTag: (oldTag: string, newTag: string) => void;
 }
 
@@ -89,6 +90,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
         note.id === noteId ? { ...note, folderId, updatedAt: new Date() } : note
       ),
     })),
+
   updateTag: (oldTag, newTag) =>
     set((state) => {
       // Update all notes that contain the old tag
@@ -99,8 +101,23 @@ export const useNoteStore = create<NoteStore>((set) => ({
           
           // Replace the tag in the content if it exists
           let updatedContent = note.content || '';
+          // Match #tag that's not followed by any word characters or hyphens
           const tagRegex = new RegExp(`#${oldTag}(?![\\w-])`, 'g');
-          updatedContent = updatedContent.replace(tagRegex, `#${newTag}`);
+          
+          // Create a temporary div to parse HTML content
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = updatedContent;
+          
+          // Update text content within HTML
+          const walkNodes = (node: Node) => {
+            if (node.nodeType === Node.TEXT_NODE && node.textContent) {
+              node.textContent = node.textContent.replace(tagRegex, `#${newTag}`);
+            }
+            node.childNodes.forEach(walkNodes);
+          };
+          
+          walkNodes(tempDiv);
+          updatedContent = tempDiv.innerHTML;
           
           // Replace the tag in the title if it exists
           let updatedTitle = note.title || '';
