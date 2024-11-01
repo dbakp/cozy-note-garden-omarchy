@@ -27,31 +27,37 @@
     --ring: 346 89% 60%;
     --radius: 0.5rem;
   }
- 
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground antialiased;
-  }
 }
 
 @layer components {
-  .note-content {
-    @apply text-sm leading-relaxed max-w-none;
-  }
-
-  .note-editor {
-    @apply font-mono text-sm;
-  }
-
   .ProseMirror {
     @apply p-4;
   }
 
   .ProseMirror:focus {
     @apply outline-none;
+  }
+
+  .ProseMirror table {
+    @apply border-collapse w-full my-4;
+  }
+
+  .ProseMirror table td,
+  .ProseMirror table th {
+    @apply border border-border p-2 relative group;
+    min-width: 100px;
+  }
+
+  .ProseMirror table th {
+    @apply bg-muted font-semibold;
+  }
+
+  .ProseMirror table tr:nth-child(even) {
+    @apply bg-muted/30;
+  }
+
+  .ProseMirror table tr:hover {
+    @apply bg-muted/50;
   }
 
   .ProseMirror img {
