@@ -11,16 +11,16 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
   const getContentPreview = (content: string | null): string => {
     if (!content) return "No content";
     
-    // First remove all HTML tags
-    const withoutTags = content.replace(/<[^>]*>/g, '');
+    // Remove all HTML tags and decode HTML entities
+    const div = document.createElement('div');
+    div.innerHTML = content;
+    const textContent = div.textContent || div.innerText || '';
     
-    // Split by any HTML line break or newline character
-    const lines = withoutTags.split(/(?:<br\s*\/?>|\n|\r\n|\r)/);
-    
-    // Get first non-empty line
+    // Split by newlines and get first non-empty line
+    const lines = textContent.split(/\n/);
     const firstLine = lines.find(line => line.trim().length > 0) || '';
     
-    // Clean up extra spaces and limit length
+    // Clean up and limit length
     return firstLine.trim().substring(0, 100);
   };
   
