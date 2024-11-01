@@ -48,23 +48,19 @@ export default function Sidebar() {
         </CollapsibleTrigger>
 
         <Droppable droppableId="all-notes">
-          {(provided) => (
+          {(provided, snapshot) => (
             <div 
               ref={provided.innerRef} 
               {...provided.droppableProps}
-              className={cn(
-                "transition-colors rounded-lg",
-                selectedFolderId === null && "bg-primary/5"
-              )}
+              className="mb-2"
             >
               <button
                 onClick={() => setSelectedFolderId(null)}
                 className={cn(
-                  "w-full flex items-center transition-colors rounded-lg text-sm mb-2",
+                  "w-full flex items-center transition-colors rounded-lg text-sm",
                   isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
-                  selectedFolderId === null
-                    ? "text-primary"
-                    : "text-gray-600 hover:bg-gray-100"
+                  selectedFolderId === null ? "text-primary" : "text-gray-600 hover:bg-gray-100",
+                  snapshot.isDraggingOver && "bg-primary/5"
                 )}
               >
                 <span className={cn(
@@ -111,23 +107,18 @@ export default function Sidebar() {
         <nav className="space-y-1">
           {folders.map((folder) => (
             <Droppable key={folder.id} droppableId={folder.id}>
-              {(provided) => (
+              {(provided, snapshot) => (
                 <div 
                   ref={provided.innerRef} 
                   {...provided.droppableProps}
-                  className={cn(
-                    "transition-colors rounded-lg",
-                    selectedFolderId === folder.id && "bg-primary/5"
-                  )}
                 >
                   <button
                     onClick={() => setSelectedFolderId(folder.id)}
                     className={cn(
                       "w-full flex items-center transition-colors rounded-lg text-sm",
                       isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
-                      selectedFolderId === folder.id
-                        ? "text-primary"
-                        : "text-gray-600 hover:bg-gray-100"
+                      selectedFolderId === folder.id ? "text-primary" : "text-gray-600 hover:bg-gray-100",
+                      snapshot.isDraggingOver && "bg-primary/5"
                     )}
                   >
                     <span className={cn(
