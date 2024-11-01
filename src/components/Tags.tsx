@@ -15,7 +15,7 @@ export default function Tags() {
 
   const handleStartEdit = (tag: string) => {
     setEditingTag(tag);
-    setEditedTagValue(tag);
+    setEditedTagValue(tag.replace(/^#/, ''));
   };
 
   const handleSaveEdit = (oldTag: string) => {

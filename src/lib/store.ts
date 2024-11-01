@@ -16,7 +16,6 @@ interface NoteStore {
   setSelectedTag: (tag: string | null) => void;
   setSelectedFolderId: (id: string | null) => void;
   moveNoteToFolder: (noteId: string, folderId: string | undefined) => void;
-
   updateTag: (oldTag: string, newTag: string) => void;
 }
 
@@ -26,6 +25,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
   tags: [],
   selectedTag: null,
   selectedFolderId: null,
+  
   addNote: (note) =>
     set((state) => ({
       notes: [
@@ -84,6 +84,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
     })),
   setSelectedTag: (tag) => set({ selectedTag: tag }),
   setSelectedFolderId: (id) => set({ selectedFolderId: id }),
+
   moveNoteToFolder: (noteId, folderId) =>
     set((state) => ({
       notes: state.notes.map((note) =>
@@ -93,36 +94,48 @@ export const useNoteStore = create<NoteStore>((set) => ({
 
   updateTag: (oldTag, newTag) =>
     set((state) => {
-      // Update all notes that contain the old tag
       const updatedNotes = state.notes.map(note => {
         if (note.tags.includes(oldTag)) {
-          // Replace the tag in the tags array
-          const updatedTags = note.tags.map(tag => tag === oldTag ? newTag : tag);
-          
-          // Replace the tag in the content if it exists
-          let updatedContent = note.content || '';
-          // Match #tag that's not followed by any word characters or hyphens
-          const tagRegex = new RegExp(`#${oldTag}(?![\\w-])`, 'g');
-          
-          // Create a temporary div to parse HTML content
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = updatedContent;
-          
-          // Update text content within HTML
-          const walkNodes = (node: Node) => {
-            if (node.nodeType === Node.TEXT_NODE && node.textContent) {
-              node.textContent = node.textContent.replace(tagRegex, `#${newTag}`);
+          // Update tags array
+          const updatedTags = note.tags.map(tag => 
+            tag === oldTag ? newTag : tag
+          );
+
+          // Update content
+          let updatedContent = note.content;
+          if (updatedContent) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(updatedContent, 'text/html');
+            
+            const textNodes = [];
+            const walker = document.createTreeWalker(
+              doc.body,
+              NodeFilter.SHOW_TEXT,
+              null
+            );
+
+            let node;
+            while (node = walker.nextNode()) {
+              textNodes.push(node);
             }
-            node.childNodes.forEach(walkNodes);
-          };
-          
-          walkNodes(tempDiv);
-          updatedContent = tempDiv.innerHTML;
-          
-          // Replace the tag in the title if it exists
-          let updatedTitle = note.title || '';
-          updatedTitle = updatedTitle.replace(tagRegex, `#${newTag}`);
-          
+
+            const tagRegex = new RegExp(`#${oldTag}(?![\\w-])`, 'g');
+            textNodes.forEach(node => {
+              if (node.textContent) {
+                node.textContent = node.textContent.replace(tagRegex, `#${newTag}`);
+              }
+            });
+
+            updatedContent = doc.body.innerHTML;
+          }
+
+          // Update title
+          let updatedTitle = note.title;
+          if (updatedTitle) {
+            const tagRegex = new RegExp(`#${oldTag}(?![\\w-])`, 'g');
+            updatedTitle = updatedTitle.replace(tagRegex, `#${newTag}`);
+          }
+
           return {
             ...note,
             tags: updatedTags,
@@ -134,18 +147,17 @@ export const useNoteStore = create<NoteStore>((set) => ({
         return note;
       });
 
-      // Update the tags array
-      const allTags = new Set<string>();
-      updatedNotes.forEach(note => {
-        note.tags?.forEach(tag => allTags.add(tag));
-      });
+      // Update tags array
+      const updatedTags = state.tags.map(tag => 
+        tag === oldTag ? newTag : tag
+      ).sort();
 
       // Update selected tag if it was the one being edited
       const newSelectedTag = state.selectedTag === oldTag ? newTag : state.selectedTag;
 
       return {
         notes: updatedNotes,
-        tags: Array.from(allTags).sort(),
+        tags: updatedTags,
         selectedTag: newSelectedTag
       };
     }),
