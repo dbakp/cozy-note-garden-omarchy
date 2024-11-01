@@ -8,10 +8,11 @@ interface NoteCardProps {
 }
 
 export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
-  // Remove HTML tags from content and get first line only
+  // Get only the first line of content without HTML tags
   const contentPreview = note.content
     .replace(/<[^>]+>/g, '')
     .split('\n')[0]
+    .slice(0, 100)  // Limit to 100 characters for better display
     .trim();
   
   return (
