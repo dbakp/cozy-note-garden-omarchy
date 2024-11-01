@@ -34,6 +34,10 @@ export default function NoteEditor({ note }: NoteEditorProps) {
       TaskList,
       TaskItem.configure({
         nested: true,
+        onReadOnlyChecked: () => true,
+        HTMLAttributes: {
+          class: 'task-item',
+        },
       }),
       Highlight,
       Typography,
@@ -50,6 +54,47 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     editorProps: {
       attributes: {
         class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4',
+      },
+      handleClick: (view, pos, event) => {
+        const node = view.state.doc.nodeAt(pos);
+        if (node?.type.name === 'taskItem') {
+          // Get the parent task list
+          const resolvedPos = view.state.doc.resolve(pos);
+          const taskList = resolvedPos.parent;
+          const taskListPos = resolvedPos.before(resolvedPos.depth - 1);
+
+          if (taskList.type.name === 'taskList') {
+            // Get all task items
+            const items = [];
+            taskList.forEach((node, offset) => {
+              items.push({
+                node,
+                pos: taskListPos + 1 + offset,
+                checked: node.attrs.checked,
+              });
+            });
+
+            // Sort items: unchecked first, then checked
+            items.sort((a, b) => {
+              if (a.checked === b.checked) return 0;
+              return a.checked ? 1 : -1;
+            });
+
+            // Create a new transaction to reorder items
+            const tr = view.state.tr;
+            let offset = taskListPos + 1;
+            items.forEach(({ node }) => {
+              const size = node.nodeSize;
+              if (offset !== node.pos) {
+                tr.delete(node.pos, node.pos + size);
+                tr.insert(offset, node);
+              }
+              offset += size;
+            });
+
+            view.dispatch(tr);
+          }
+        }
       },
     },
     onUpdate: ({ editor }) => {
