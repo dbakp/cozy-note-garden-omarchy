@@ -74,58 +74,58 @@ export default function Tags() {
               />
             ) : (
               <div className="flex items-center justify-between w-full group">
-                <button
-                  onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-                  className="flex-1"
+                <Badge
+                  variant={selectedTag === tag ? "default" : "secondary"}
+                  className="cursor-pointer group-hover:bg-primary/20 w-full justify-between pr-1"
                 >
-                  <Badge
-                    variant={selectedTag === tag ? "default" : "secondary"}
-                    className="cursor-pointer group-hover:bg-primary/20 w-full justify-start"
+                  <button
+                    onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                    className="flex-1 px-1"
                   >
                     {tag}
-                    {selectedTag === tag && (
-                      <X className="w-3 h-3 ml-1" />
-                    )}
-                  </Badge>
-                </button>
-                <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleStartEdit(tag);
-                    }}
-                    className="hover:text-primary"
-                  >
-                    <Pencil className="w-3 h-3" />
                   </button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <button
-                        onClick={(e) => e.stopPropagation()}
-                        className="hover:text-destructive"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete tag</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will remove the tag "{tag}" from all notes that have it. The notes themselves won't be deleted.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleDelete(tag)}
-                          className="bg-destructive hover:bg-destructive/90"
+                  <div className="flex items-center gap-1 ml-2">
+                    {selectedTag === tag && (
+                      <X className="w-3 h-3" />
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStartEdit(tag);
+                      }}
+                      className="hover:text-primary p-0.5 rounded"
+                    >
+                      <Pencil className="w-3 h-3" />
+                    </button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <button
+                          onClick={(e) => e.stopPropagation()}
+                          className="hover:text-destructive p-0.5 rounded"
                         >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete tag</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will remove the tag "{tag}" from all notes that have it. The notes themselves won't be deleted.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(tag)}
+                            className="bg-destructive hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </Badge>
               </div>
             )}
           </div>
