@@ -68,6 +68,48 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     }
   };
 
+  const handleImageUpload = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: false
+      });
+      
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      await video.play();
+
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(video, 0, 0);
+
+      const imageUrl = canvas.toDataURL('image/png');
+      stream.getTracks().forEach(track => track.stop());
+      editor?.chain().focus().setImage({ src: imageUrl }).run();
+
+      toast({
+        title: "Screenshot inserted",
+        description: "Your screenshot has been added to the note",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to capture screenshot",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const insertCheckbox = () => {
+    editor?.chain().focus().toggleTaskList().run();
+    toast({
+      title: "Checkbox added",
+      description: "You can now add items to your checklist",
+    });
+  };
+
   if (!note) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-400">
@@ -101,6 +143,8 @@ export default function NoteEditor({ note }: NoteEditorProps) {
       )}
       <EditorToolbar 
         editor={editor} 
+        onImageUpload={handleImageUpload}
+        onInsertCheckbox={insertCheckbox}
         isVisible={isToolbarVisible}
         onHideToolbar={() => setIsToolbarVisible(false)}
       />
