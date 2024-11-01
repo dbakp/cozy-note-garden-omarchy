@@ -54,7 +54,7 @@ export default function Sidebar() {
               onClick={() => setSelectedCategory(category.id)}
               className={cn(
                 "w-full flex items-center transition-colors rounded-lg text-sm",
-                isExpanded ? "px-3 py-2 space-x-2" : "p-2 justify-center",
+                isExpanded ? "px-3 py-2 space-x-2" : "px-2 py-2 justify-center",
                 selectedCategory === category.id
                   ? "bg-primary/10 text-primary"
                   : "text-gray-600 hover:bg-gray-100"
