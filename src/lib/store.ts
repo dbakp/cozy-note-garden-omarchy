@@ -16,6 +16,7 @@ interface NoteStore {
   setSelectedTag: (tag: string | null) => void;
   setSelectedFolderId: (id: string | null) => void;
   moveNoteToFolder: (noteId: string, folderId: string | undefined) => void;
+  updateTag: (oldTag: string, newTag: string) => void;
 }
 
 export const useNoteStore = create<NoteStore>((set) => ({
@@ -88,4 +89,28 @@ export const useNoteStore = create<NoteStore>((set) => ({
         note.id === noteId ? { ...note, folderId, updatedAt: new Date() } : note
       ),
     })),
+  updateTag: (oldTag, newTag) =>
+    set((state) => {
+      // Update all notes that contain the old tag
+      const updatedNotes = state.notes.map(note => ({
+        ...note,
+        tags: note.tags.map(tag => tag === oldTag ? newTag : tag),
+        updatedAt: note.tags.includes(oldTag) ? new Date() : note.updatedAt
+      }));
+
+      // Update the tags array
+      const allTags = new Set<string>();
+      updatedNotes.forEach(note => {
+        note.tags?.forEach(tag => allTags.add(tag));
+      });
+
+      // Update selected tag if it was the one being edited
+      const newSelectedTag = state.selectedTag === oldTag ? newTag : state.selectedTag;
+
+      return {
+        notes: updatedNotes,
+        tags: Array.from(allTags).sort(),
+        selectedTag: newSelectedTag
+      };
+    }),
 }));
