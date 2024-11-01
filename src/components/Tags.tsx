@@ -41,42 +41,44 @@ export default function Tags() {
   return (
     <div className="px-4 py-2 space-y-2">
       <h2 className="text-sm font-medium text-gray-500">Tags</h2>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-col space-y-2">
         {tags.map((tag) => (
-          <div key={tag} className="group relative">
+          <div key={tag} className="group relative flex items-center">
             {editingTag === tag ? (
               <Input
                 value={editedTagValue}
                 onChange={(e) => setEditedTagValue(e.target.value)}
                 onBlur={() => handleSaveEdit(tag)}
                 onKeyDown={(e) => handleKeyDown(e, tag)}
-                className="h-6 px-2 py-0 w-32 text-sm"
+                className="h-6 px-2 py-0 text-sm"
                 autoFocus
               />
             ) : (
-              <button
-                onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-                className="group"
-              >
-                <Badge
-                  variant={selectedTag === tag ? "default" : "secondary"}
-                  className="cursor-pointer group-hover:bg-primary/20"
+              <div className="flex items-center justify-between w-full group">
+                <button
+                  onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                  className="flex-1"
                 >
-                  {tag}
-                  {selectedTag === tag && (
-                    <X className="w-3 h-3 ml-1" />
-                  )}
-                </Badge>
+                  <Badge
+                    variant={selectedTag === tag ? "default" : "secondary"}
+                    className="cursor-pointer group-hover:bg-primary/20 w-full justify-start"
+                  >
+                    {tag}
+                    {selectedTag === tag && (
+                      <X className="w-3 h-3 ml-1" />
+                    )}
+                  </Badge>
+                </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleStartEdit(tag);
                   }}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 hover:text-primary -mr-4"
+                  className="opacity-0 group-hover:opacity-100 hover:text-primary ml-2"
                 >
                   <Pencil className="w-3 h-3" />
                 </button>
-              </button>
+              </div>
             )}
           </div>
         ))}
