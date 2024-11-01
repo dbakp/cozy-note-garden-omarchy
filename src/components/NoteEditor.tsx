@@ -6,8 +6,30 @@ import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
+import Highlight from '@tiptap/extension-highlight';
+import Typography from '@tiptap/extension-typography';
+import Link from '@tiptap/extension-link';
+import Underline from '@tiptap/extension-underline';
+import TextAlign from '@tiptap/extension-text-align';
+import CodeBlock from '@tiptap/extension-code-block';
 import { Button } from "./ui/button";
-import { ImagePlus, ListTodo } from "lucide-react";
+import { 
+  ImagePlus, 
+  ListTodo, 
+  Bold, 
+  Italic, 
+  Underline as UnderlineIcon,
+  Code,
+  Link as LinkIcon,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Highlighter,
+  List,
+  ListOrdered,
+  Quote,
+  Heading
+} from "lucide-react";
 import { useToast } from "./ui/use-toast";
 
 interface NoteEditorProps {
@@ -27,6 +49,16 @@ export default function NoteEditor({ note }: NoteEditorProps) {
       TaskItem.configure({
         nested: true,
       }),
+      Highlight,
+      Typography,
+      Link.configure({
+        openOnClick: false,
+      }),
+      Underline,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      CodeBlock,
     ],
     content: note?.content || "",
     editorProps: {
@@ -99,6 +131,13 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     });
   };
 
+  const setLink = () => {
+    const url = window.prompt('Enter URL:');
+    if (url) {
+      editor?.chain().focus().setLink({ href: url }).run();
+    }
+  };
+
   if (!note) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-400">
@@ -118,24 +157,127 @@ export default function NoteEditor({ note }: NoteEditorProps) {
           className="w-full text-xl font-medium focus:outline-none"
           autoFocus
         />
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={insertCheckbox}
-            className="ml-2"
-          >
-            <ListTodo className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleImageUpload}
-            className="ml-2"
-          >
-            <ImagePlus className="h-4 w-4" />
-          </Button>
-        </div>
+      </div>
+      <div className="border-b p-2 flex flex-wrap gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+          className={editor?.isActive('heading', { level: 2 }) ? 'bg-muted' : ''}
+        >
+          <Heading className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().toggleBold().run()}
+          className={editor?.isActive('bold') ? 'bg-muted' : ''}
+        >
+          <Bold className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().toggleItalic().run()}
+          className={editor?.isActive('italic') ? 'bg-muted' : ''}
+        >
+          <Italic className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().toggleUnderline().run()}
+          className={editor?.isActive('underline') ? 'bg-muted' : ''}
+        >
+          <UnderlineIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().toggleHighlight().run()}
+          className={editor?.isActive('highlight') ? 'bg-muted' : ''}
+        >
+          <Highlighter className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
+          className={editor?.isActive('codeBlock') ? 'bg-muted' : ''}
+        >
+          <Code className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={setLink}
+          className={editor?.isActive('link') ? 'bg-muted' : ''}
+        >
+          <LinkIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().setTextAlign('left').run()}
+          className={editor?.isActive({ textAlign: 'left' }) ? 'bg-muted' : ''}
+        >
+          <AlignLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().setTextAlign('center').run()}
+          className={editor?.isActive({ textAlign: 'center' }) ? 'bg-muted' : ''}
+        >
+          <AlignCenter className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().setTextAlign('right').run()}
+          className={editor?.isActive({ textAlign: 'right' }) ? 'bg-muted' : ''}
+        >
+          <AlignRight className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().toggleBulletList().run()}
+          className={editor?.isActive('bulletList') ? 'bg-muted' : ''}
+        >
+          <List className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+          className={editor?.isActive('orderedList') ? 'bg-muted' : ''}
+        >
+          <ListOrdered className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => editor?.chain().focus().toggleBlockquote().run()}
+          className={editor?.isActive('blockquote') ? 'bg-muted' : ''}
+        >
+          <Quote className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={insertCheckbox}
+          className={editor?.isActive('taskList') ? 'bg-muted' : ''}
+        >
+          <ListTodo className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleImageUpload}
+        >
+          <ImagePlus className="h-4 w-4" />
+        </Button>
       </div>
       <div className="flex-1 overflow-auto">
         <EditorContent editor={editor} className="h-full" />
