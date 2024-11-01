@@ -52,15 +52,17 @@ export default function Sidebar() {
             <div 
               ref={provided.innerRef} 
               {...provided.droppableProps}
-              className="mb-2"
+              className={cn(
+                "mb-2 rounded-lg transition-colors",
+                snapshot.isDraggingOver && "bg-primary/5"
+              )}
             >
               <button
                 onClick={() => setSelectedFolderId(null)}
                 className={cn(
                   "w-full flex items-center transition-colors rounded-lg text-sm",
                   isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
-                  selectedFolderId === null ? "text-primary" : "text-gray-600 hover:bg-gray-100",
-                  snapshot.isDraggingOver && "bg-primary/5"
+                  selectedFolderId === null ? "text-primary" : "text-gray-600 hover:bg-gray-100"
                 )}
               >
                 <span className={cn(
@@ -111,14 +113,17 @@ export default function Sidebar() {
                 <div 
                   ref={provided.innerRef} 
                   {...provided.droppableProps}
+                  className={cn(
+                    "rounded-lg transition-colors",
+                    snapshot.isDraggingOver && "bg-primary/5"
+                  )}
                 >
                   <button
                     onClick={() => setSelectedFolderId(folder.id)}
                     className={cn(
                       "w-full flex items-center transition-colors rounded-lg text-sm",
                       isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
-                      selectedFolderId === folder.id ? "text-primary" : "text-gray-600 hover:bg-gray-100",
-                      snapshot.isDraggingOver && "bg-primary/5"
+                      selectedFolderId === folder.id ? "text-primary" : "text-gray-600 hover:bg-gray-100"
                     )}
                   >
                     <span className={cn(
