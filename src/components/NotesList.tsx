@@ -11,13 +11,13 @@ interface NotesListProps {
 }
 
 export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps) {
-  const { notes, addNote, selectedTag } = useNoteStore();
+  const { notes, addNote, selectedTag, selectedFolderId } = useNoteStore();
 
   const handleCreateNewNote = () => {
     const newNote = {
       title: "",
       content: "",
-      category: "1",
+      folderId: selectedFolderId,
       tags: [],
     };
     
@@ -27,9 +27,15 @@ export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps
     }
   };
 
-  const filteredNotes = selectedTag
-    ? notes.filter(note => note.tags?.includes(selectedTag))
-    : notes;
+  const filteredNotes = notes.filter(note => {
+    if (selectedTag) {
+      return note.tags?.includes(selectedTag);
+    }
+    if (selectedFolderId) {
+      return note.folderId === selectedFolderId;
+    }
+    return !note.folderId; // Show only notes without a folder in "All Notes"
+  });
 
   return (
     <div className="w-80 border-r h-screen flex flex-col">

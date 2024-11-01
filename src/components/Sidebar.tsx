@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Folder } from "@/lib/types";
-import { Book, FolderPlus, ChevronRight } from "lucide-react";
+import { Book, FolderPlus, ChevronRight, Inbox } from "lucide-react";
 import Tags from "./Tags";
 import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
 import { useNoteStore } from "@/lib/store";
@@ -47,6 +47,25 @@ export default function Sidebar() {
           )} />
         </CollapsibleTrigger>
 
+        <button
+          onClick={() => setSelectedFolderId(null)}
+          className={cn(
+            "w-full flex items-center transition-colors rounded-lg text-sm mb-6",
+            isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
+            selectedFolderId === null
+              ? "bg-primary/10 text-primary"
+              : "text-gray-600 hover:bg-gray-100"
+          )}
+        >
+          <span className={cn(
+            "flex items-center justify-center",
+            !isExpanded && "w-full"
+          )}>
+            <Inbox className="w-4 h-4" />
+          </span>
+          {isExpanded && <span>All Notes</span>}
+        </button>
+
         <div className="flex items-center justify-between mb-4">
           {isExpanded && <h2 className="text-sm font-medium text-gray-500">Folders</h2>}
           <Dialog open={isCreateFolderOpen} onOpenChange={setIsCreateFolderOpen}>
@@ -79,7 +98,7 @@ export default function Sidebar() {
           {folders.map((folder) => (
             <button
               key={folder.id}
-              onClick={() => setSelectedFolderId(selectedFolderId === folder.id ? null : folder.id)}
+              onClick={() => setSelectedFolderId(folder.id)}
               className={cn(
                 "w-full flex items-center transition-colors rounded-lg text-sm",
                 isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
