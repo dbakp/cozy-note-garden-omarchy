@@ -17,6 +17,7 @@ interface NoteStore {
   setSelectedFolderId: (id: string | null) => void;
   moveNoteToFolder: (noteId: string, folderId: string | undefined) => void;
   updateTag: (oldTag: string, newTag: string) => void;
+  deleteTag: (tagToDelete: string) => void;
 }
 
 export const useNoteStore = create<NoteStore>((set) => ({
@@ -102,15 +103,12 @@ export const useNoteStore = create<NoteStore>((set) => ({
     set((state) => {
       const updatedNotes = state.notes.map(note => {
         if (note.tags.includes(oldTag)) {
-          // Update tags array
           const updatedTags = note.tags.map(tag => 
             tag === oldTag ? newTag : tag
           );
 
-          // Update content
           let updatedContent = note.content;
           if (updatedContent) {
-            // Ensure oldTag has # prefix for content replacement
             const oldTagWithHash = oldTag.startsWith('#') ? oldTag : `#${oldTag}`;
             const newTagWithHash = newTag.startsWith('#') ? newTag : `#${newTag}`;
             
@@ -136,7 +134,6 @@ export const useNoteStore = create<NoteStore>((set) => ({
             updatedContent = doc.body.innerHTML;
           }
 
-          // Update title
           let updatedTitle = note.title;
           if (updatedTitle) {
             const oldTagWithHash = oldTag.startsWith('#') ? oldTag : `#${oldTag}`;
@@ -158,18 +155,77 @@ export const useNoteStore = create<NoteStore>((set) => ({
         return note;
       });
 
-      // Update tags array
       const updatedTags = state.tags.map(tag => 
         tag === oldTag ? newTag : tag
       ).sort();
 
-      // Update selected tag if it was the one being edited
       const newSelectedTag = state.selectedTag === oldTag ? newTag : state.selectedTag;
 
       return {
         notes: updatedNotes,
         tags: updatedTags,
         selectedTag: newSelectedTag
+      };
+    }),
+
+  deleteTag: (tagToDelete) =>
+    set((state) => {
+      const updatedNotes = state.notes.map(note => {
+        if (note.tags.includes(tagToDelete)) {
+          const updatedTags = note.tags.filter(tag => tag !== tagToDelete);
+
+          let updatedContent = note.content;
+          if (updatedContent) {
+            const tagWithHash = tagToDelete.startsWith('#') ? tagToDelete : `#${tagToDelete}`;
+            
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(updatedContent, 'text/html');
+            
+            const walker = document.createTreeWalker(
+              doc.body,
+              NodeFilter.SHOW_TEXT,
+              null
+            );
+
+            let node;
+            while (node = walker.nextNode()) {
+              if (node.textContent) {
+                node.textContent = node.textContent.replace(
+                  new RegExp(tagWithHash + '(?![\\w-])', 'g'), 
+                  ''
+                );
+              }
+            }
+
+            updatedContent = doc.body.innerHTML;
+          }
+
+          let updatedTitle = note.title;
+          if (updatedTitle) {
+            const tagWithHash = tagToDelete.startsWith('#') ? tagToDelete : `#${tagToDelete}`;
+            updatedTitle = updatedTitle.replace(
+              new RegExp(tagWithHash + '(?![\\w-])', 'g'),
+              ''
+            );
+          }
+
+          return {
+            ...note,
+            tags: updatedTags,
+            content: updatedContent,
+            title: updatedTitle,
+            updatedAt: new Date()
+          };
+        }
+        return note;
+      });
+
+      const updatedTags = state.tags.filter(tag => tag !== tagToDelete);
+
+      return {
+        notes: updatedNotes,
+        tags: updatedTags,
+        selectedTag: state.selectedTag === tagToDelete ? null : state.selectedTag
       };
     }),
 }));

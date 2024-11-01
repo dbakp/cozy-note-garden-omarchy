@@ -1,12 +1,23 @@
 import { useNoteStore } from "@/lib/store";
 import { Badge } from "./ui/badge";
-import { X, Pencil } from "lucide-react";
+import { X, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { useToast } from "./ui/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
 
 export default function Tags() {
-  const { tags, selectedTag, setSelectedTag, updateTag } = useNoteStore();
+  const { tags, selectedTag, setSelectedTag, updateTag, deleteTag } = useNoteStore();
   const [editingTag, setEditingTag] = useState<string | null>(null);
   const [editedTagValue, setEditedTagValue] = useState("");
   const { toast } = useToast();
@@ -28,6 +39,14 @@ export default function Tags() {
       });
     }
     setEditingTag(null);
+  };
+
+  const handleDelete = (tag: string) => {
+    deleteTag(tag);
+    toast({
+      title: "Tag deleted",
+      description: `Tag "${tag}" has been removed from all notes`,
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, oldTag: string) => {
@@ -69,15 +88,44 @@ export default function Tags() {
                     )}
                   </Badge>
                 </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleStartEdit(tag);
-                  }}
-                  className="opacity-0 group-hover:opacity-100 hover:text-primary ml-2"
-                >
-                  <Pencil className="w-3 h-3" />
-                </button>
+                <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStartEdit(tag);
+                    }}
+                    className="hover:text-primary"
+                  >
+                    <Pencil className="w-3 h-3" />
+                  </button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className="hover:text-destructive"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete tag</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will remove the tag "{tag}" from all notes that have it. The notes themselves won't be deleted.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(tag)}
+                          className="bg-destructive hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </div>
             )}
           </div>
