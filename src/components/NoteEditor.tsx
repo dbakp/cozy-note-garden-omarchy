@@ -4,8 +4,10 @@ import { useNoteStore } from "@/lib/store";
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
+import TaskList from '@tiptap/extension-task-list';
+import TaskItem from '@tiptap/extension-task-item';
 import { Button } from "./ui/button";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, ListTodo } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 
 interface NoteEditorProps {
@@ -21,6 +23,10 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     extensions: [
       StarterKit,
       Image,
+      TaskList,
+      TaskItem.configure({
+        nested: true,
+      }),
     ],
     content: note?.content || "",
     editorProps: {
@@ -85,6 +91,14 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     }
   };
 
+  const insertCheckbox = () => {
+    editor?.chain().focus().toggleTaskList().run();
+    toast({
+      title: "Checkbox added",
+      description: "You can now add items to your checklist",
+    });
+  };
+
   if (!note) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-400">
@@ -104,14 +118,24 @@ export default function NoteEditor({ note }: NoteEditorProps) {
           className="w-full text-xl font-medium focus:outline-none"
           autoFocus
         />
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleImageUpload}
-          className="ml-2"
-        >
-          <ImagePlus className="h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={insertCheckbox}
+            className="ml-2"
+          >
+            <ListTodo className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleImageUpload}
+            className="ml-2"
+          >
+            <ImagePlus className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       <div className="flex-1 overflow-auto">
         <EditorContent editor={editor} className="h-full" />

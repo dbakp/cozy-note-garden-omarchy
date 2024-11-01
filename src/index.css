@@ -57,4 +57,24 @@
   .ProseMirror img {
     @apply max-w-full h-auto my-4 rounded-lg shadow-lg;
   }
+
+  ul[data-type="taskList"] {
+    @apply list-none p-0;
+  }
+
+  ul[data-type="taskList"] li {
+    @apply flex items-start my-1;
+  }
+
+  ul[data-type="taskList"] li > label {
+    @apply mr-2 mt-1;
+  }
+
+  ul[data-type="taskList"] li > div {
+    @apply flex-1;
+  }
+
+  ul[data-type="taskList"] input[type="checkbox"] {
+    @apply h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary/20;
+  }
 }
