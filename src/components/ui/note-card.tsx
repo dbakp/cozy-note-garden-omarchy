@@ -10,10 +10,12 @@ interface NoteCardProps {
 export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
   // Get only the first line of content without HTML tags
   const contentPreview = note.content
-    .replace(/<[^>]+>/g, '') // Remove HTML tags
-    .split(/\r?\n/)[0] // Get first line (handles both \n and \r\n)
-    .trim() // Remove leading/trailing whitespace
-    .slice(0, 100); // Limit to 100 characters
+    ? note.content
+        .replace(/<[^>]+>/g, '') // Remove HTML tags
+        .split(/\r?\n/)[0] // Get first line (handles both \n and \r\n)
+        .trim() // Remove leading/trailing whitespace
+        .substring(0, 100) // Limit to 100 characters
+    : "No content";
   
   return (
     <button
@@ -23,7 +25,7 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
       }`}
     >
       <h3 className="font-medium text-sm mb-1 truncate">{note.title || "Untitled"}</h3>
-      <div className="text-sm text-gray-500 truncate">{contentPreview || "No content"}</div>
+      <div className="text-sm text-gray-500 truncate">{contentPreview}</div>
       <div className="flex items-center text-xs text-gray-400">
         <span>{formatDistanceToNow(note.updatedAt, { addSuffix: true })}</span>
       </div>
