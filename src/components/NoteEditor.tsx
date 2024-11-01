@@ -12,6 +12,10 @@ import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import CodeBlock from '@tiptap/extension-code-block';
+import Table from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
 import { useToast } from "./ui/use-toast";
 import FloatingFormatMenu from "./editor/FloatingFormatMenu";
 import EditorToolbar from "./editor/EditorToolbar";
@@ -25,6 +29,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   const [title, setTitle] = useState(note?.title || "");
   const { toast } = useToast();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isToolbarVisible, setIsToolbarVisible] = useState(true);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
@@ -49,6 +54,12 @@ export default function NoteEditor({ note }: NoteEditorProps) {
         types: ['heading', 'paragraph'],
       }),
       CodeBlock,
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
     ],
     content: note?.content || "",
     editorProps: {
@@ -110,7 +121,6 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   useEffect(() => {
     setTitle(note?.title || "");
     editor?.commands.setContent(note?.content || "");
-    // Focus the title input when a new note is created
     if (note && !note.title && titleInputRef.current) {
       titleInputRef.current.focus();
     }
@@ -165,13 +175,6 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     });
   };
 
-  const setLink = () => {
-    const url = window.prompt('Enter URL:');
-    if (url) {
-      editor?.chain().focus().setLink({ href: url }).run();
-    }
-  };
-
   if (!note) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-400">
@@ -196,6 +199,8 @@ export default function NoteEditor({ note }: NoteEditorProps) {
         editor={editor} 
         onImageUpload={handleImageUpload}
         onInsertCheckbox={insertCheckbox}
+        isVisible={isToolbarVisible}
+        onHideToolbar={() => setIsToolbarVisible(false)}
       />
       <div className="flex-1 overflow-auto relative">
         {isMenuVisible && (
@@ -203,7 +208,12 @@ export default function NoteEditor({ note }: NoteEditorProps) {
             <FloatingFormatMenu 
               editor={editor} 
               isVisible={isMenuVisible}
-              setLink={setLink}
+              setLink={() => {
+                const url = window.prompt('Enter URL:');
+                if (url) {
+                  editor?.chain().focus().setLink({ href: url }).run();
+                }
+              }}
             />
           </div>
         )}

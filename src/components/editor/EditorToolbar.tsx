@@ -9,20 +9,41 @@ import {
   ListOrdered,
   Quote,
   Heading,
+  Bold,
+  Italic,
+  Highlighter,
+  Link,
+  Table,
 } from "lucide-react";
 import { Button } from "../ui/button";
+import EditorDropdownMenu from "./EditorDropdownMenu";
 
 interface EditorToolbarProps {
   editor: Editor | null;
   onImageUpload: () => void;
   onInsertCheckbox: () => void;
+  isVisible: boolean;
+  onHideToolbar: () => void;
 }
 
-export default function EditorToolbar({ editor, onImageUpload, onInsertCheckbox }: EditorToolbarProps) {
-  if (!editor) return null;
+export default function EditorToolbar({ 
+  editor, 
+  onImageUpload, 
+  onInsertCheckbox,
+  isVisible,
+  onHideToolbar
+}: EditorToolbarProps) {
+  if (!editor || !isVisible) return null;
+
+  const setLink = () => {
+    const url = window.prompt('Enter URL:');
+    if (url) {
+      editor.chain().focus().setLink({ href: url }).run();
+    }
+  };
 
   return (
-    <div className="border-b p-2 flex flex-wrap gap-1">
+    <div className="border-b p-2 flex flex-wrap gap-1 sticky top-0 bg-background z-10">
       <Button
         variant="ghost"
         size="icon"
@@ -30,54 +51,6 @@ export default function EditorToolbar({ editor, onImageUpload, onInsertCheckbox 
         className={editor.isActive('heading', { level: 2 }) ? 'bg-muted' : ''}
       >
         <Heading className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => editor.chain().focus().setTextAlign('left').run()}
-        className={editor.isActive({ textAlign: 'left' }) ? 'bg-muted' : ''}
-      >
-        <AlignLeft className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => editor.chain().focus().setTextAlign('center').run()}
-        className={editor.isActive({ textAlign: 'center' }) ? 'bg-muted' : ''}
-      >
-        <AlignCenter className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => editor.chain().focus().setTextAlign('right').run()}
-        className={editor.isActive({ textAlign: 'right' }) ? 'bg-muted' : ''}
-      >
-        <AlignRight className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={editor.isActive('bulletList') ? 'bg-muted' : ''}
-      >
-        <List className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={editor.isActive('orderedList') ? 'bg-muted' : ''}
-      >
-        <ListOrdered className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => editor.chain().focus().toggleBlockquote().run()}
-        className={editor.isActive('blockquote') ? 'bg-muted' : ''}
-      >
-        <Quote className="h-4 w-4" />
       </Button>
       <Button
         variant="ghost"
@@ -90,10 +63,59 @@ export default function EditorToolbar({ editor, onImageUpload, onInsertCheckbox 
       <Button
         variant="ghost"
         size="icon"
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        className={editor.isActive('bulletList') ? 'bg-muted' : ''}
+      >
+        <List className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        className={editor.isActive('bold') ? 'bg-muted' : ''}
+      >
+        <Bold className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        className={editor.isActive('italic') ? 'bg-muted' : ''}
+      >
+        <Italic className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => editor.chain().focus().toggleHighlight().run()}
+        className={editor.isActive('highlight') ? 'bg-muted' : ''}
+      >
+        <Highlighter className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={setLink}
+        className={editor.isActive('link') ? 'bg-muted' : ''}
+      >
+        <Link className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+        className={editor.isActive('table') ? 'bg-muted' : ''}
+      >
+        <Table className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={onImageUpload}
       >
         <ImagePlus className="h-4 w-4" />
       </Button>
+      <EditorDropdownMenu editor={editor} onHideToolbar={onHideToolbar} />
     </div>
   );
 }
