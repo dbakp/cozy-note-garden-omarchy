@@ -47,29 +47,29 @@ export default function Sidebar() {
           )} />
         </CollapsibleTrigger>
 
-        <CollapsibleContent className="space-y-1">
-          <nav className="space-y-1">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={cn(
-                  "w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-colors",
-                  selectedCategory === category.id
-                    ? "bg-primary/10 text-primary"
-                    : "text-gray-600 hover:bg-gray-100"
-                )}
-              >
-                {getIcon(category.icon)}
-                <span>{category.name}</span>
-              </button>
-            ))}
-          </nav>
+        <nav className="space-y-1">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className={cn(
+                "w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-colors",
+                selectedCategory === category.id
+                  ? "bg-primary/10 text-primary"
+                  : "text-gray-600 hover:bg-gray-100"
+              )}
+            >
+              <span className="flex-shrink-0">{getIcon(category.icon)}</span>
+              {isExpanded && <span>{category.name}</span>}
+            </button>
+          ))}
+        </nav>
 
+        {isExpanded && (
           <div className="mt-6">
             <Tags />
           </div>
-        </CollapsibleContent>
+        )}
       </div>
     </Collapsible>
   );
