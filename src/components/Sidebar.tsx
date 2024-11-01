@@ -34,7 +34,7 @@ export default function Sidebar() {
       open={isExpanded}
       onOpenChange={setIsExpanded}
       className={cn(
-        "border-r h-screen transition-all duration-300",
+        "border-r h-screen transition-all duration-300 overflow-hidden",
         isExpanded ? "w-64" : "w-12"
       )}
     >
