@@ -12,17 +12,16 @@ export default function NoteCard({ note, isSelected, onClick }: NoteCardProps) {
     if (!content) return "No content";
     
     // First remove all HTML tags
-    const withoutTags = content.replace(/<[^>]*>/g, ' ');
+    const withoutTags = content.replace(/<[^>]*>/g, '');
     
-    // Split by any type of line break and get first line
-    const lines = withoutTags.split(/[\n\r]+/);
-    const firstLine = lines[0] || '';
+    // Split by any HTML line break or newline character
+    const lines = withoutTags.split(/(?:<br\s*\/?>|\n|\r\n|\r)/);
+    
+    // Get first non-empty line
+    const firstLine = lines.find(line => line.trim().length > 0) || '';
     
     // Clean up extra spaces and limit length
-    return firstLine
-      .replace(/\s+/g, ' ')
-      .trim()
-      .substring(0, 100);
+    return firstLine.trim().substring(0, 100);
   };
   
   const contentPreview = getContentPreview(note.content);
