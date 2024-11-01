@@ -75,7 +75,13 @@ export default function NoteEditor({ note }: NoteEditorProps) {
 
   const handleImageUpload = async () => {
     try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({ preferCurrentTab: true });
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          cursor: "always"
+        },
+        audio: false
+      });
+      
       const video = document.createElement('video');
       video.srcObject = stream;
       await video.play();
