@@ -19,6 +19,8 @@ import TableHeader from '@tiptap/extension-table-header';
 import { useToast } from "./ui/use-toast";
 import FloatingFormatMenu from "./editor/FloatingFormatMenu";
 import EditorToolbar from "./editor/EditorToolbar";
+import { Button } from "./ui/button";
+import { Eye } from "lucide-react";
 
 interface NoteEditorProps {
   note?: Note;
@@ -195,6 +197,17 @@ export default function NoteEditor({ note }: NoteEditorProps) {
           className="w-full text-xl font-medium focus:outline-none"
         />
       </div>
+      {!isToolbarVisible && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsToolbarVisible(true)}
+          className="absolute top-16 right-4 z-20"
+        >
+          <Eye className="h-4 w-4 mr-2" />
+          Show Style Bar
+        </Button>
+      )}
       <EditorToolbar 
         editor={editor} 
         onImageUpload={handleImageUpload}
