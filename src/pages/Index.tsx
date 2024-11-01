@@ -16,7 +16,8 @@ export default function Index() {
     if (!result.destination) return;
 
     const noteId = result.draggableId;
-    const destinationFolderId = result.destination.droppableId === "all-notes" ? null : result.destination.droppableId;
+    // Set folderId to undefined (not null) when moving to "all-notes"
+    const destinationFolderId = result.destination.droppableId === "all-notes" ? undefined : result.destination.droppableId;
     
     updateNote(noteId, { folderId: destinationFolderId });
     
