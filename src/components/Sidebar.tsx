@@ -43,8 +43,8 @@ export default function Sidebar() {
       open={isExpanded}
       onOpenChange={setIsExpanded}
       className={cn(
-        "border-r h-screen transition-all duration-300 overflow-hidden",
-        isExpanded ? "w-64" : "w-12"
+        "border-r h-screen transition-all duration-300 overflow-hidden flex-shrink-0",
+        isExpanded ? "w-64 min-w-[16rem]" : "w-12 min-w-[3rem]"
       )}
     >
       <div className="flex flex-col h-full">
