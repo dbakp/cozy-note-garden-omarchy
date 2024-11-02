@@ -128,9 +128,11 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
       <div style={{ pointerEvents: 'auto' }}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <TableMenuButton />
+            <TableMenuButton asChild />
           </DropdownMenuTrigger>
-          <TableMenuItems editor={editor} copyTableAs={copyTableAs} />
+          <DropdownMenuContent align="end">
+            <TableMenuItems editor={editor} copyTableAs={copyTableAs} />
+          </DropdownMenuContent>
         </DropdownMenu>
       </div>
     </div>
