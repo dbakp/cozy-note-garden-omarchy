@@ -10,8 +10,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, AlignLeft, ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Plus, Trash, Copy } from 'lucide-react';
+import { MoreHorizontal, AlignLeft, ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Plus, Trash, Copy, Table } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "../ui/button";
 
 interface TableCellMenuProps {
   editor: Editor;
@@ -51,10 +52,16 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="opacity-0 group-hover:opacity-100 absolute top-1 right-1 p-1 rounded hover:bg-accent">
-        <MoreHorizontal className="h-4 w-4" />
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="outline" 
+          size="icon"
+          className="fixed bottom-4 right-4 h-12 w-12 rounded-full shadow-lg hover:shadow-xl"
+        >
+          <Table className="h-6 w-6" />
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <Copy className="h-4 w-4 mr-2" />
