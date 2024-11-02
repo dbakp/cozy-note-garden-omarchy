@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Editor } from '@tiptap/react';
-import { DropdownMenu } from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import TableMenuButton from './table/TableMenuButton';
 import TableMenuItems from './table/TableMenuItems';
 
@@ -34,8 +34,8 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
       const editorRect = dom.getBoundingClientRect();
 
       setPosition({
-        top: cellRect.top - editorRect.top + 4, // Small padding from top
-        right: editorRect.right - cellRect.right - 4, // Small padding from right
+        top: cellRect.top - editorRect.top + 4,
+        right: editorRect.right - cellRect.right - 4,
       });
     };
 
@@ -122,10 +122,10 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
       style={{ 
         top: `${position.top}px`, 
         right: `${position.right}px`,
-        pointerEvents: 'none', // Allow clicking through the container
+        pointerEvents: 'none',
       }}
     >
-      <div style={{ pointerEvents: 'auto' }}> {/* Re-enable pointer events for the menu */}
+      <div style={{ pointerEvents: 'auto' }}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <TableMenuButton />
