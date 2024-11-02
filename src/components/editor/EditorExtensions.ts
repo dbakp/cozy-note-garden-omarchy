@@ -36,6 +36,7 @@ export const editorExtensions = [
   CodeBlock,
   Table.configure({
     resizable: true,
+    allowTableNodeSelection: true,
     HTMLAttributes: {
       class: 'border-collapse table-fixed w-full',
     },
