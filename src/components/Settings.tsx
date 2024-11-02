@@ -72,7 +72,7 @@ export default function Settings() {
                   />
                   <Label
                     htmlFor="light"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-background p-4 hover:bg-muted/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-muted/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                   >
                     <span className="mb-2 text-foreground">Light</span>
                     <div className="w-full rounded-md border p-2 bg-background" />
@@ -86,7 +86,7 @@ export default function Settings() {
                   />
                   <Label
                     htmlFor="dark"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-background p-4 hover:bg-muted/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary dark"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-muted/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary dark"
                   >
                     <span className="mb-2 text-foreground">Dark</span>
                     <div className="w-full rounded-md border border-muted p-2 bg-background" />
@@ -111,7 +111,7 @@ export default function Settings() {
                     <Label
                       htmlFor={font.value}
                       className={cn(
-                        "flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-muted/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary",
+                        "flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-muted/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary",
                         font.className
                       )}
                     >
