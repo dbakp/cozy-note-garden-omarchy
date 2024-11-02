@@ -91,6 +91,7 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
   }, [editor]);
 
   const copyTableAs = (format: 'markdown' | 'html' | 'csv') => {
+    editor.chain().focus();
     const table = editor.state.selection.$anchor.node(1);
     let content = '';
     
@@ -112,6 +113,7 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
     }
     
     navigator.clipboard.writeText(content);
+    editor.chain().focus().run();
   };
 
   if (!isVisible) return null;
@@ -126,7 +128,7 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
       }}
     >
       <div style={{ pointerEvents: 'auto' }}>
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger>
             <TableMenuButton />
           </DropdownMenuTrigger>

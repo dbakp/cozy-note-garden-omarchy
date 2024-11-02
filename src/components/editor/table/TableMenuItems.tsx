@@ -1,7 +1,6 @@
 import { Editor } from '@tiptap/react';
 import { useToast } from "../../ui/use-toast";
 import {
-  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuSub,
@@ -26,17 +25,30 @@ interface TableMenuItemsProps {
 export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsProps) {
   const { toast } = useToast();
 
+  const handleAction = (action: () => void, message: string) => {
+    editor.chain().focus();
+    action();
+    toast({ description: message });
+    editor.chain().focus().run();
+  };
+
   return (
-    <DropdownMenuContent align="end" className="w-56">
+    <>
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
           <Copy className="h-4 w-4 mr-2" />
           Copy Table As
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>
-          <DropdownMenuItem onClick={() => copyTableAs('markdown')}>Markdown</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => copyTableAs('html')}>HTML</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => copyTableAs('csv')}>CSV</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => copyTableAs('markdown')}>
+            Markdown
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => copyTableAs('html')}>
+            HTML
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => copyTableAs('csv')}>
+            CSV
+          </DropdownMenuItem>
         </DropdownMenuSubContent>
       </DropdownMenuSub>
       
@@ -46,13 +58,22 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
           Align Column
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>
-          <DropdownMenuItem onClick={() => editor.chain().focus().setCellAttribute('textAlign', 'left').run()}>
+          <DropdownMenuItem onSelect={() => handleAction(
+            () => editor.chain().focus().setCellAttribute('textAlign', 'left').run(),
+            "Column aligned left"
+          )}>
             Left
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => editor.chain().focus().setCellAttribute('textAlign', 'center').run()}>
+          <DropdownMenuItem onSelect={() => handleAction(
+            () => editor.chain().focus().setCellAttribute('textAlign', 'center').run(),
+            "Column aligned center"
+          )}>
             Center
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => editor.chain().focus().setCellAttribute('textAlign', 'right').run()}>
+          <DropdownMenuItem onSelect={() => handleAction(
+            () => editor.chain().focus().setCellAttribute('textAlign', 'right').run(),
+            "Column aligned right"
+          )}>
             Right
           </DropdownMenuItem>
         </DropdownMenuSubContent>
@@ -60,51 +81,61 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
 
       <DropdownMenuSeparator />
       
-      <DropdownMenuItem onClick={() => {
-        editor.chain().focus().addColumnBefore().run();
-        toast({ description: "Column added before" });
-      }}>
+      <DropdownMenuItem onSelect={() => handleAction(
+        () => editor.chain().focus().addColumnBefore().run(),
+        "Column added before"
+      )}>
         <ArrowLeft className="h-4 w-4 mr-2" />
         Add Column Before
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => {
-        editor.chain().focus().addColumnAfter().run();
-        toast({ description: "Column added after" });
-      }}>
+      
+      <DropdownMenuItem onSelect={() => handleAction(
+        () => editor.chain().focus().addColumnAfter().run(),
+        "Column added after"
+      )}>
         <ArrowRight className="h-4 w-4 mr-2" />
         Add Column After
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => {
-        editor.chain().focus().addRowBefore().run();
-        toast({ description: "Row added before" });
-      }}>
+      
+      <DropdownMenuItem onSelect={() => handleAction(
+        () => editor.chain().focus().addRowBefore().run(),
+        "Row added before"
+      )}>
         <ArrowUp className="h-4 w-4 mr-2" />
         Add Row Before
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => {
-        editor.chain().focus().addRowAfter().run();
-        toast({ description: "Row added after" });
-      }}>
+      
+      <DropdownMenuItem onSelect={() => handleAction(
+        () => editor.chain().focus().addRowAfter().run(),
+        "Row added after"
+      )}>
         <ArrowDown className="h-4 w-4 mr-2" />
         Add Row After
       </DropdownMenuItem>
 
       <DropdownMenuSeparator />
 
-      <DropdownMenuItem onClick={() => {
-        editor.chain().focus().deleteColumn().run();
-        toast({ description: "Column deleted" });
-      }} className="text-destructive">
+      <DropdownMenuItem 
+        onSelect={() => handleAction(
+          () => editor.chain().focus().deleteColumn().run(),
+          "Column deleted"
+        )}
+        className="text-destructive"
+      >
         <Trash className="h-4 w-4 mr-2" />
         Delete Column
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => {
-        editor.chain().focus().deleteRow().run();
-        toast({ description: "Row deleted" });
-      }} className="text-destructive">
+      
+      <DropdownMenuItem 
+        onSelect={() => handleAction(
+          () => editor.chain().focus().deleteRow().run(),
+          "Row deleted"
+        )}
+        className="text-destructive"
+      >
         <Trash className="h-4 w-4 mr-2" />
         Delete Row
       </DropdownMenuItem>
-    </DropdownMenuContent>
+    </>
   );
 }
