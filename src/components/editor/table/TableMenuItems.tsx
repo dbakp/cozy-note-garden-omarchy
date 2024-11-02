@@ -10,10 +10,11 @@ import {
 import {
   Copy,
   AlignLeft,
+  AlignCenter,
+  AlignRight,
   ArrowDown,
   ArrowUp,
-  ArrowLeft,
-  ArrowRight,
+  ArrowLeftRight,
   Trash,
 } from "lucide-react";
 
@@ -26,9 +27,20 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
   const { toast } = useToast();
 
   const handleAction = (action: () => void, message: string) => {
-    editor.chain().focus();
     action();
     toast({ description: message });
+    editor.chain().focus().run();
+  };
+
+  const setColumnAlignment = (alignment: 'left' | 'center' | 'right') => {
+    const cells = editor.state.doc.nodeAt(editor.state.selection.from)?.firstChild?.content;
+    if (!cells) return;
+    
+    editor.chain().focus();
+    cells.forEach((_, index) => {
+      editor.chain().focus().selectColumn(index);
+      editor.chain().focus().setCellAttribute('textAlign', alignment);
+    });
     editor.chain().focus().run();
   };
 
@@ -54,26 +66,29 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
       
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
-          <AlignLeft className="h-4 w-4 mr-2" />
+          <AlignLeftRight className="h-4 w-4 mr-2" />
           Align Column
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>
           <DropdownMenuItem onSelect={() => handleAction(
-            () => editor.chain().focus().setCellAttribute('textAlign', 'left').run(),
+            () => setColumnAlignment('left'),
             "Column aligned left"
           )}>
+            <AlignLeft className="h-4 w-4 mr-2" />
             Left
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => handleAction(
-            () => editor.chain().focus().setCellAttribute('textAlign', 'center').run(),
+            () => setColumnAlignment('center'),
             "Column aligned center"
           )}>
+            <AlignCenter className="h-4 w-4 mr-2" />
             Center
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => handleAction(
-            () => editor.chain().focus().setCellAttribute('textAlign', 'right').run(),
+            () => setColumnAlignment('right'),
             "Column aligned right"
           )}>
+            <AlignRight className="h-4 w-4 mr-2" />
             Right
           </DropdownMenuItem>
         </DropdownMenuSubContent>
@@ -85,7 +100,7 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
         () => editor.chain().focus().addColumnBefore().run(),
         "Column added before"
       )}>
-        <ArrowLeft className="h-4 w-4 mr-2" />
+        <ArrowLeftRight className="h-4 w-4 mr-2" />
         Add Column Before
       </DropdownMenuItem>
       
@@ -93,7 +108,7 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
         () => editor.chain().focus().addColumnAfter().run(),
         "Column added after"
       )}>
-        <ArrowRight className="h-4 w-4 mr-2" />
+        <ArrowLeftRight className="h-4 w-4 mr-2" />
         Add Column After
       </DropdownMenuItem>
       
