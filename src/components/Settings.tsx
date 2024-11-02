@@ -50,7 +50,7 @@ export default function Settings() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full justify-start font-medium"
+                className="w-full justify-start font-medium text-foreground"
               >
                 Appearance
               </Button>
@@ -58,7 +58,7 @@ export default function Settings() {
           </div>
           <div className="flex-1 space-y-6">
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Theme</h3>
+              <h3 className="text-lg font-medium text-foreground">Theme</h3>
               <RadioGroup
                 defaultValue={theme}
                 onValueChange={(value) => setTheme(value as "light" | "dark")}
@@ -74,7 +74,7 @@ export default function Settings() {
                     htmlFor="light"
                     className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-background p-4 hover:bg-muted/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                   >
-                    <span className="mb-2">Light</span>
+                    <span className="mb-2 text-foreground">Light</span>
                     <div className="w-full rounded-md border p-2 bg-background" />
                   </Label>
                 </div>
@@ -88,14 +88,14 @@ export default function Settings() {
                     htmlFor="dark"
                     className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-background p-4 hover:bg-muted/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary dark"
                   >
-                    <span className="mb-2">Dark</span>
+                    <span className="mb-2 text-foreground">Dark</span>
                     <div className="w-full rounded-md border border-muted p-2 bg-background" />
                   </Label>
                 </div>
               </RadioGroup>
             </div>
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Font</h3>
+              <h3 className="text-lg font-medium text-foreground">Font</h3>
               <RadioGroup
                 defaultValue={selectedFont}
                 onValueChange={handleFontChange}
@@ -115,8 +115,8 @@ export default function Settings() {
                         font.className
                       )}
                     >
-                      <span className="mb-2">{font.label}</span>
-                      <p className="text-sm">The quick brown fox</p>
+                      <span className="mb-2 text-foreground">{font.label}</span>
+                      <p className="text-sm text-foreground">The quick brown fox</p>
                     </Label>
                   </div>
                 ))}
