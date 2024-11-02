@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { FolderPlus, ChevronRight, Inbox } from "lucide-react";
 import Tags from "./Tags";
+import Settings from "./Settings";
 import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
 import { useNoteStore } from "@/lib/store";
 import { Button } from "./ui/button";
@@ -46,98 +47,105 @@ export default function Sidebar() {
         isExpanded ? "w-64" : "w-12"
       )}
     >
-      <div className="p-4">
-        <CollapsibleTrigger className="w-full flex items-center justify-between mb-6">
-          {isExpanded && <h1 className="text-xl font-semibold text-primary">Notes</h1>}
-          <ChevronRight className={cn(
-            "w-5 h-5 transition-transform",
-            isExpanded ? "rotate-180" : "rotate-0"
-          )} />
-        </CollapsibleTrigger>
+      <div className="flex flex-col h-full">
+        <div className="p-4 flex-1">
+          <CollapsibleTrigger className="w-full flex items-center justify-between mb-6">
+            {isExpanded && <h1 className="text-xl font-semibold text-primary">Notes</h1>}
+            <ChevronRight className={cn(
+              "w-5 h-5 transition-transform",
+              isExpanded ? "rotate-180" : "rotate-0"
+            )} />
+          </CollapsibleTrigger>
 
-        <Droppable droppableId="all-notes">
-          {(provided, snapshot) => (
-            <div 
-              ref={provided.innerRef} 
-              {...provided.droppableProps}
-              className="mb-2"
-            >
-              <div className={cn(
-                "rounded-lg transition-colors",
-                snapshot.isDraggingOver && "bg-primary/5"
-              )}>
-                <FolderButton
-                  name="All Notes"
-                  count={allNotesCount}
-                  isSelected={selectedFolderId === null}
-                  isExpanded={isExpanded}
-                  onClick={() => setSelectedFolderId(null)}
-                  icon={<Inbox className="w-4 h-4" />}
-                />
+          <Droppable droppableId="all-notes">
+            {(provided, snapshot) => (
+              <div 
+                ref={provided.innerRef} 
+                {...provided.droppableProps}
+                className="mb-2"
+              >
+                <div className={cn(
+                  "rounded-lg transition-colors",
+                  snapshot.isDraggingOver && "bg-primary/5"
+                )}>
+                  <FolderButton
+                    name="All Notes"
+                    count={allNotesCount}
+                    isSelected={selectedFolderId === null}
+                    isExpanded={isExpanded}
+                    onClick={() => setSelectedFolderId(null)}
+                    icon={<Inbox className="w-4 h-4" />}
+                  />
+                </div>
+                {provided.placeholder}
               </div>
-              {provided.placeholder}
+            )}
+          </Droppable>
+
+          <div className="flex items-center justify-between mb-4 mt-4">
+            {isExpanded && <h2 className="text-sm font-medium text-gray-500">Folders</h2>}
+            <Dialog open={isCreateFolderOpen} onOpenChange={setIsCreateFolderOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon" className={cn(!isExpanded && "mx-auto")}>
+                  <FolderPlus className="w-4 h-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create New Folder</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <Input
+                    placeholder="Folder name"
+                    value={newFolderName}
+                    onChange={(e) => setNewFolderName(e.target.value)}
+                  />
+                  <IconSelector
+                    selectedIcon={selectedIcon}
+                    onSelectIcon={setSelectedIcon}
+                  />
+                  <Button onClick={handleCreateFolder}>Create Folder</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <nav className="space-y-1">
+            {folders.map((folder) => (
+              <Droppable key={folder.id} droppableId={folder.id}>
+                {(provided, snapshot) => (
+                  <div 
+                    ref={provided.innerRef} 
+                    {...provided.droppableProps}
+                  >
+                    <div className={cn(
+                      "rounded-lg transition-colors",
+                      snapshot.isDraggingOver && "bg-primary/5"
+                    )}>
+                      <FolderButton
+                        name={folder.name}
+                        count={folderCounts[folder.id]}
+                        isSelected={selectedFolderId === folder.id}
+                        isExpanded={isExpanded}
+                        onClick={() => setSelectedFolderId(folder.id)}
+                      />
+                    </div>
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            ))}
+          </nav>
+
+          {isExpanded && (
+            <div className="mt-6">
+              <Tags />
             </div>
           )}
-        </Droppable>
-
-        <div className="flex items-center justify-between mb-4 mt-4">
-          {isExpanded && <h2 className="text-sm font-medium text-gray-500">Folders</h2>}
-          <Dialog open={isCreateFolderOpen} onOpenChange={setIsCreateFolderOpen}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="icon" className={cn(!isExpanded && "mx-auto")}>
-                <FolderPlus className="w-4 h-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Folder</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <Input
-                  placeholder="Folder name"
-                  value={newFolderName}
-                  onChange={(e) => setNewFolderName(e.target.value)}
-                />
-                <IconSelector
-                  selectedIcon={selectedIcon}
-                  onSelectIcon={setSelectedIcon}
-                />
-                <Button onClick={handleCreateFolder}>Create Folder</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
         </div>
-
-        <nav className="space-y-1">
-          {folders.map((folder) => (
-            <Droppable key={folder.id} droppableId={folder.id}>
-              {(provided, snapshot) => (
-                <div 
-                  ref={provided.innerRef} 
-                  {...provided.droppableProps}
-                >
-                  <div className={cn(
-                    "rounded-lg transition-colors",
-                    snapshot.isDraggingOver && "bg-primary/5"
-                  )}>
-                    <FolderButton
-                      name={folder.name}
-                      count={folderCounts[folder.id]}
-                      isSelected={selectedFolderId === folder.id}
-                      isExpanded={isExpanded}
-                      onClick={() => setSelectedFolderId(folder.id)}
-                    />
-                  </div>
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          ))}
-        </nav>
-
         {isExpanded && (
-          <div className="mt-6">
-            <Tags />
+          <div className="p-4 border-t">
+            <Settings />
           </div>
         )}
       </div>
