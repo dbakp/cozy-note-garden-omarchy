@@ -16,7 +16,6 @@ export default function Index() {
     if (!result.destination) return;
 
     const noteId = result.draggableId;
-    // Set folderId to undefined (not null) when moving to "all-notes"
     const destinationFolderId = result.destination.droppableId === "all-notes" ? undefined : result.destination.droppableId;
     
     updateNote(noteId, { folderId: destinationFolderId });
@@ -29,7 +28,7 @@ export default function Index() {
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex h-screen bg-white">
+      <div className="flex h-screen bg-background text-foreground">
         <Sidebar />
         <NotesList onNoteSelect={setSelectedNote} selectedNote={selectedNote} />
         <NoteEditor note={selectedNote} />
