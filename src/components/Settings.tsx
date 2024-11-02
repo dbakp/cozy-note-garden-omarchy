@@ -61,7 +61,7 @@ export default function Settings() {
               <h3 className="text-lg font-medium">Theme</h3>
               <RadioGroup
                 defaultValue={theme}
-                onValueChange={(value) => setTheme(value)}
+                onValueChange={(value) => setTheme(value as "light" | "dark")}
                 className="grid grid-cols-2 gap-4"
               >
                 <div>
