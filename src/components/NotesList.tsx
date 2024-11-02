@@ -38,8 +38,8 @@ export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps
   });
 
   return (
-    <div className="w-80 border-r border-muted/40 h-screen flex flex-col">
-      <div className="p-4 border-b border-muted/40">
+    <div className="w-80 border-r border-border h-screen flex flex-col">
+      <div className="p-4 border-b border-border">
         <div className="flex items-center space-x-2 mb-4">
           <div className="relative flex-1">
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />

@@ -120,7 +120,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
 
   return (
     <div className="flex-1 flex flex-col h-screen relative">
-      <div className="border-b p-4">
+      <div className="border-b border-border p-4">
         <input
           ref={titleInputRef}
           type="text"
