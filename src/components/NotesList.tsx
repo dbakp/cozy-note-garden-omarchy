@@ -38,7 +38,7 @@ export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps
   });
 
   return (
-    <div className="w-80 border-r border-border h-screen flex flex-col">
+    <div className="w-80 min-w-[20rem] flex-shrink-0 border-r border-border h-screen flex flex-col">
       <div className="p-4 border-b border-border">
         <div className="flex items-center space-x-2 mb-4">
           <div className="relative flex-1">
