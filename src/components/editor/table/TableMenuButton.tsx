@@ -11,7 +11,6 @@ export default function TableMenuButton({ asChild }: TableMenuButtonProps) {
       variant="outline" 
       size="sm"
       className="h-6 w-6 rounded-full shadow-sm hover:shadow-md bg-background p-1"
-      asChild={asChild}
     >
       <Table className="h-3 w-3" />
     </Button>
