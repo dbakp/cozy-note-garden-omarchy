@@ -26,9 +26,6 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
     let content = '';
     
     if (format === 'html') {
-      // Create a temporary element to get HTML content
-      const tempDiv = document.createElement('div');
-      const fragment = table.type.createChecked(table.attrs, table.content);
       const dom = editor.view.nodeDOM(editor.state.selection.$anchor.before(1)) as HTMLElement;
       if (dom) {
         content = dom.outerHTML;
@@ -36,7 +33,6 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
     } else if (format === 'markdown') {
       content = table.textContent;
     } else if (format === 'csv') {
-      // Basic CSV conversion
       table.forEach((row: any) => {
         const cells: string[] = [];
         row.forEach((cell: any) => {
@@ -91,63 +87,50 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
 
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem onClick={() => editor.chain().focus().addRowAfter().run()}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Row
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => editor.chain().focus().addRowBefore().run()}>
-          <ArrowUp className="h-4 w-4 mr-2" />
-          Add Row Above
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => editor.chain().focus().addColumnAfter().run()}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Column
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => editor.chain().focus().addColumnBefore().run()}>
+        <DropdownMenuItem onClick={() => {
+          editor.chain().focus().addColumnBefore().run();
+          toast({ description: "Column added before" });
+        }}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Add Column Before
         </DropdownMenuItem>
-
-        <DropdownMenuSeparator />
-
         <DropdownMenuItem onClick={() => {
-          editor.chain().focus().addRowBefore().deleteRow().run();
-          toast({ description: "Row moved up" });
-        }}>
-          <ArrowUp className="h-4 w-4 mr-2" />
-          Move Row Up
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {
-          editor.chain().focus().addRowAfter().deleteRow().run();
-          toast({ description: "Row moved down" });
-        }}>
-          <ArrowDown className="h-4 w-4 mr-2" />
-          Move Row Down
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {
-          editor.chain().focus().addColumnBefore().deleteColumn().run();
-          toast({ description: "Column moved left" });
-        }}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Move Column Left
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {
-          editor.chain().focus().addColumnAfter().deleteColumn().run();
-          toast({ description: "Column moved right" });
+          editor.chain().focus().addColumnAfter().run();
+          toast({ description: "Column added after" });
         }}>
           <ArrowRight className="h-4 w-4 mr-2" />
-          Move Column Right
+          Add Column After
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => {
+          editor.chain().focus().addRowBefore().run();
+          toast({ description: "Row added before" });
+        }}>
+          <ArrowUp className="h-4 w-4 mr-2" />
+          Add Row Before
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => {
+          editor.chain().focus().addRowAfter().run();
+          toast({ description: "Row added after" });
+        }}>
+          <ArrowDown className="h-4 w-4 mr-2" />
+          Add Row After
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={() => editor.chain().focus().deleteRow().run()}>
-          <Trash className="h-4 w-4 mr-2" />
-          Delete Row
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => editor.chain().focus().deleteColumn().run()}>
+        <DropdownMenuItem onClick={() => {
+          editor.chain().focus().deleteColumn().run();
+          toast({ description: "Column deleted" });
+        }} className="text-destructive">
           <Trash className="h-4 w-4 mr-2" />
           Delete Column
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => {
+          editor.chain().focus().deleteRow().run();
+          toast({ description: "Row deleted" });
+        }} className="text-destructive">
+          <Trash className="h-4 w-4 mr-2" />
+          Delete Row
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
