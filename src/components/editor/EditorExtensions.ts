@@ -38,14 +38,14 @@ export const editorExtensions = [
     resizable: true,
     allowTableNodeSelection: true,
     HTMLAttributes: {
-      class: 'border-collapse table-fixed w-full',
+      class: 'border-collapse table-fixed w-full min-h-[50px]',
     },
   }),
   TableRow,
   TableHeader,
   TableCell.configure({
     HTMLAttributes: {
-      class: 'border border-border p-2 relative group',
+      class: 'border border-border p-2 relative group min-h-[30px]',
     },
   }),
 ];
