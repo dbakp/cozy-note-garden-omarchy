@@ -14,7 +14,7 @@ import {
   AlignRight,
   ArrowDown,
   ArrowUp,
-  ArrowLeftRight,
+  MoveHorizontal,
   Trash,
 } from "lucide-react";
 
@@ -33,12 +33,12 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
   };
 
   const setColumnAlignment = (alignment: 'left' | 'center' | 'right') => {
-    const cells = editor.state.doc.nodeAt(editor.state.selection.from)?.firstChild?.content;
-    if (!cells) return;
+    const pos = editor.state.selection.from;
+    const table = editor.state.doc.nodeAt(pos)?.firstChild;
+    if (!table) return;
     
     editor.chain().focus();
-    cells.forEach((_, index) => {
-      editor.chain().focus().selectColumn(index);
+    table.content.forEach(() => {
       editor.chain().focus().setCellAttribute('textAlign', alignment);
     });
     editor.chain().focus().run();
@@ -66,7 +66,7 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
       
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
-          <AlignLeftRight className="h-4 w-4 mr-2" />
+          <MoveHorizontal className="h-4 w-4 mr-2" />
           Align Column
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>
@@ -100,7 +100,7 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
         () => editor.chain().focus().addColumnBefore().run(),
         "Column added before"
       )}>
-        <ArrowLeftRight className="h-4 w-4 mr-2" />
+        <MoveHorizontal className="h-4 w-4 mr-2" />
         Add Column Before
       </DropdownMenuItem>
       
@@ -108,7 +108,7 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
         () => editor.chain().focus().addColumnAfter().run(),
         "Column added after"
       )}>
-        <ArrowLeftRight className="h-4 w-4 mr-2" />
+        <MoveHorizontal className="h-4 w-4 mr-2" />
         Add Column After
       </DropdownMenuItem>
       
