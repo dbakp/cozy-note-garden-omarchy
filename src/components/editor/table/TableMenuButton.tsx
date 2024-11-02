@@ -9,11 +9,11 @@ export default function TableMenuButton({ asChild }: TableMenuButtonProps) {
   return (
     <Button 
       variant="outline" 
-      size="icon"
-      className="h-8 w-8 rounded-full shadow-lg hover:shadow-xl bg-background"
+      size="sm"
+      className="h-6 w-6 rounded-full shadow-sm hover:shadow-md bg-background p-1"
       asChild={asChild}
     >
-      <Table className="h-4 w-4" />
+      <Table className="h-3 w-3" />
     </Button>
   );
 }
