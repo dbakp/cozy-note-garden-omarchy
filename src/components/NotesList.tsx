@@ -34,13 +34,12 @@ export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps
     if (selectedFolderId) {
       return note.folderId === selectedFolderId;
     }
-    // Show notes without a folderId in "All Notes"
     return !note.folderId || note.folderId === undefined;
   });
 
   return (
-    <div className="w-80 border-r h-screen flex flex-col">
-      <div className="p-4 border-b">
+    <div className="w-80 border-r border-muted h-screen flex flex-col">
+      <div className="p-4 border-b border-muted">
         <div className="flex items-center space-x-2 mb-4">
           <div className="relative flex-1">
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
