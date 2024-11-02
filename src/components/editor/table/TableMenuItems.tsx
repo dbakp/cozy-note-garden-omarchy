@@ -33,15 +33,12 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
   };
 
   const setColumnAlignment = (alignment: 'left' | 'center' | 'right') => {
-    const pos = editor.state.selection.from;
-    const table = editor.state.doc.nodeAt(pos)?.firstChild;
-    if (!table) return;
+    editor.chain()
+      .focus()
+      .updateAttributes('tableCell', { textAlign: alignment })
+      .run();
     
-    editor.chain().focus();
-    table.content.forEach(() => {
-      editor.chain().focus().setCellAttribute('textAlign', alignment);
-    });
-    editor.chain().focus().run();
+    toast({ description: `Column aligned ${alignment}` });
   };
 
   return (
@@ -70,24 +67,15 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
           Align Column
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>
-          <DropdownMenuItem onSelect={() => handleAction(
-            () => setColumnAlignment('left'),
-            "Column aligned left"
-          )}>
+          <DropdownMenuItem onSelect={() => setColumnAlignment('left')}>
             <AlignLeft className="h-4 w-4 mr-2" />
             Left
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => handleAction(
-            () => setColumnAlignment('center'),
-            "Column aligned center"
-          )}>
+          <DropdownMenuItem onSelect={() => setColumnAlignment('center')}>
             <AlignCenter className="h-4 w-4 mr-2" />
             Center
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => handleAction(
-            () => setColumnAlignment('right'),
-            "Column aligned right"
-          )}>
+          <DropdownMenuItem onSelect={() => setColumnAlignment('right')}>
             <AlignRight className="h-4 w-4 mr-2" />
             Right
           </DropdownMenuItem>

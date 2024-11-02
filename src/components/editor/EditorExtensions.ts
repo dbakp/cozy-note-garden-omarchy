@@ -35,17 +35,17 @@ export const editorExtensions = [
   }),
   CodeBlock,
   Table.configure({
-    resizable: true,
+    resizable: false,
     allowTableNodeSelection: true,
     HTMLAttributes: {
-      class: 'border-collapse table-fixed w-full min-h-[50px]',
+      class: 'w-full table-fixed',
     },
   }),
   TableRow,
   TableHeader,
   TableCell.configure({
     HTMLAttributes: {
-      class: 'border border-border p-2 relative group min-h-[30px]',
+      class: 'border border-border p-2 relative group min-w-[100px] w-[100px]',
     },
   }),
 ];

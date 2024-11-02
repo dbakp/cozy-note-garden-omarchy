@@ -61,13 +61,17 @@
   }
 
   .ProseMirror table {
-    @apply border-collapse w-full my-4;
+    @apply table-fixed border-collapse w-full my-4;
   }
 
   .ProseMirror table td,
   .ProseMirror table th {
     @apply border border-border p-2 relative group;
+    width: 100px;
     min-width: 100px;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .ProseMirror table th {
