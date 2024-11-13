@@ -14,7 +14,7 @@ export default function TableCellMenu({ editor }: TableCellMenuProps) {
   useEffect(() => {
     const handleCellHover = (event: MouseEvent) => {
       const cell = (event.target as HTMLElement).closest('td, th');
-      if (cell) {
+      if (cell instanceof HTMLElement) {
         setHoveredCell(cell);
       }
     };
