@@ -22,30 +22,7 @@ export const editorExtensions = [
     HTMLAttributes: {
       class: 'rounded-lg shadow-lg max-w-full h-auto',
     },
-    renderHTML: ({ HTMLAttributes }) => {
-      const img = document.createElement('img');
-      Object.entries(HTMLAttributes).forEach(([key, value]) => {
-        img.setAttribute(key, value as string);
-      });
-      
-      const wrapper = document.createElement('div');
-      wrapper.appendChild(img);
-      
-      const renderer = new ReactRenderer(ImagePreviewModal, {
-        props: {
-          src: HTMLAttributes.src,
-          alt: HTMLAttributes.alt,
-        },
-        editor: {
-          options: {},
-          storage: {},
-        },
-      });
-      
-      wrapper.replaceChild(renderer.element, img);
-      
-      return wrapper;
-    },
+    allowBase64: true,
   }),
   TaskList,
   TaskItem.configure({
