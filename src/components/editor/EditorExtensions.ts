@@ -12,10 +12,41 @@ import Table from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
+import { ReactRenderer } from '@tiptap/react';
+import tippy from 'tippy.js';
+import ImagePreviewModal from './ImagePreviewModal';
 
 export const editorExtensions = [
   StarterKit,
-  Image,
+  Image.configure({
+    HTMLAttributes: {
+      class: 'rounded-lg shadow-lg max-w-full h-auto',
+    },
+    renderHTML: ({ HTMLAttributes }) => {
+      const img = document.createElement('img');
+      Object.entries(HTMLAttributes).forEach(([key, value]) => {
+        img.setAttribute(key, value as string);
+      });
+      
+      const wrapper = document.createElement('div');
+      wrapper.appendChild(img);
+      
+      const renderer = new ReactRenderer(ImagePreviewModal, {
+        props: {
+          src: HTMLAttributes.src,
+          alt: HTMLAttributes.alt,
+        },
+        editor: {
+          options: {},
+          storage: {},
+        },
+      });
+      
+      wrapper.replaceChild(renderer.element, img);
+      
+      return wrapper;
+    },
+  }),
   TaskList,
   TaskItem.configure({
     nested: true,

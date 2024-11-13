@@ -102,7 +102,9 @@
   }
 
   .ProseMirror img {
-    @apply max-w-full h-auto my-4 rounded-lg shadow-lg;
+    @apply max-w-full h-auto my-4 rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity;
+    max-height: 400px;
+    object-fit: contain;
   }
 
   .ProseMirror blockquote {

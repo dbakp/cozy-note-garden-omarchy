@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { Note } from "@/lib/types";
 import { useNoteStore } from "@/lib/store";
 import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 import { editorExtensions } from './editor/EditorExtensions';
 import { useToast } from "./ui/use-toast";
 import FloatingFormatMenu from "./editor/FloatingFormatMenu";
@@ -22,11 +21,44 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
   const titleInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const extractTags = (content: string): string[] => {
     const regex = /#[\w-]+/g;
     const matches = content.match(regex) || [];
     return [...new Set(matches)];
+  };
+
+  const handleFileUpload = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result && editor) {
+          editor.chain().focus().setImage({ src: e.target.result as string }).run();
+        }
+      };
+      reader.readAsDataURL(file);
+
+      toast({
+        title: "Image uploaded",
+        description: "Your image has been added to the note",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload image",
+        variant: "destructive",
+      });
+    }
   };
 
   const editor = useEditor({
@@ -35,6 +67,22 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     editorProps: {
       attributes: {
         class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4',
+      },
+      handleDrop: (view, event, slice, moved) => {
+        if (!moved && event.dataTransfer?.files.length) {
+          const file = event.dataTransfer.files[0];
+          handleFileUpload(file);
+          return true;
+        }
+        return false;
+      },
+      handlePaste: (view, event) => {
+        if (event.clipboardData?.files.length) {
+          const file = event.clipboardData.files[0];
+          handleFileUpload(file);
+          return true;
+        }
+        return false;
       },
     },
     onUpdate: ({ editor }) => {
@@ -68,46 +116,15 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     }
   };
 
-  const handleImageUpload = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-        audio: false
-      });
-      
-      const video = document.createElement('video');
-      video.srcObject = stream;
-      await video.play();
-
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx?.drawImage(video, 0, 0);
-
-      const imageUrl = canvas.toDataURL('image/png');
-      stream.getTracks().forEach(track => track.stop());
-      editor?.chain().focus().setImage({ src: imageUrl }).run();
-
-      toast({
-        title: "Screenshot inserted",
-        description: "Your screenshot has been added to the note",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to capture screenshot",
-        variant: "destructive",
-      });
-    }
+  const handleImageUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
-  const insertCheckbox = () => {
-    editor?.chain().focus().toggleTaskList().run();
-    toast({
-      title: "Checkbox added",
-      description: "You can now add items to your checklist",
-    });
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
   };
 
   if (!note) {
@@ -120,6 +137,13 @@ export default function NoteEditor({ note }: NoteEditorProps) {
 
   return (
     <div className="flex-1 flex flex-col h-screen relative">
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileInputChange}
+        accept="image/*"
+        className="hidden"
+      />
       <div className="border-b border-border p-4">
         <input
           ref={titleInputRef}
@@ -143,8 +167,14 @@ export default function NoteEditor({ note }: NoteEditorProps) {
       )}
       <EditorToolbar 
         editor={editor} 
-        onImageUpload={handleImageUpload}
-        onInsertCheckbox={insertCheckbox}
+        onImageUpload={handleImageUploadClick}
+        onInsertCheckbox={() => {
+          editor?.chain().focus().toggleTaskList().run();
+          toast({
+            title: "Checkbox added",
+            description: "You can now add items to your checklist",
+          });
+        }}
         isVisible={isToolbarVisible}
         onHideToolbar={() => setIsToolbarVisible(false)}
       />
