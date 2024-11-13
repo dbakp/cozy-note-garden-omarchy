@@ -31,7 +31,7 @@ export const editorExtensions = [
   }),
   Underline,
   TextAlign.configure({
-    types: ['heading', 'paragraph', 'table'],
+    types: ['heading', 'paragraph', 'tableCell', 'tableHeader'],
   }),
   CodeBlock,
   Table.configure({
