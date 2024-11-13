@@ -7,6 +7,7 @@ import { useToast } from "./ui/use-toast";
 import FloatingFormatMenu from "./editor/FloatingFormatMenu";
 import EditorToolbar from "./editor/EditorToolbar";
 import TableCellMenu from "./editor/TableCellMenu";
+import ImageHandler from "./editor/ImageHandler";
 import { Button } from "./ui/button";
 import { Eye } from "lucide-react";
 
