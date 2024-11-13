@@ -43,8 +43,10 @@ export default function TableCellMenu({ editor }: TableCellMenuProps) {
   return (
     <div className="table-menu">
       <DropdownMenu modal={false}>
-        <DropdownMenuTrigger>
-          <TableMenuButton />
+        <DropdownMenuTrigger asChild>
+          <div>
+            <TableMenuButton />
+          </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <TableMenuItems editor={editor} copyTableAs={() => {}} />

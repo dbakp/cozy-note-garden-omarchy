@@ -87,11 +87,11 @@
   }
 
   .table-menu {
-    @apply absolute top-1 right-1 opacity-0 transition-opacity duration-200;
+    @apply invisible absolute top-1 right-1 z-50;
   }
 
   .ProseMirror td:hover .table-menu,
   .ProseMirror th:hover .table-menu {
-    @apply opacity-100;
+    @apply visible;
   }
 }
