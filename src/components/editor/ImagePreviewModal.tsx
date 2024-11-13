@@ -1,17 +1,19 @@
 import {
   Dialog,
   DialogContent,
-  DialogTrigger,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { Download } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
+import { Download, X } from "lucide-react";
 
 interface ImagePreviewModalProps {
   src: string;
   alt?: string;
+  onClose: () => void;
 }
 
-export default function ImagePreviewModal({ src, alt }: ImagePreviewModalProps) {
+export default function ImagePreviewModal({ src, alt, onClose }: ImagePreviewModalProps) {
   const handleDownload = () => {
     const link = document.createElement('a');
     link.href = src;
@@ -20,29 +22,37 @@ export default function ImagePreviewModal({ src, alt }: ImagePreviewModalProps) 
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <img 
-          src={src} 
-          alt={alt || 'Preview'} 
-          className="max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
-        />
-      </DialogTrigger>
+    <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-4xl">
-        <div className="relative">
+        <DialogHeader>
+          <DialogTitle className="flex justify-between items-center">
+            <span>{alt || 'Image Preview'}</span>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleDownload}
+                title="Download image"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={onClose}
+                title="Close preview"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </DialogTitle>
+        </DialogHeader>
+        <div className="relative mt-4">
           <img 
             src={src} 
             alt={alt || 'Preview'} 
-            className="max-w-full h-auto"
+            className="max-w-full h-auto rounded-lg"
           />
-          <Button
-            variant="secondary"
-            size="icon"
-            className="absolute top-2 right-2"
-            onClick={handleDownload}
-          >
-            <Download className="h-4 w-4" />
-          </Button>
         </div>
       </DialogContent>
     </Dialog>

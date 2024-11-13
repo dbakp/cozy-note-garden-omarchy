@@ -7,7 +7,7 @@ import { useToast } from "./ui/use-toast";
 import FloatingFormatMenu from "./editor/FloatingFormatMenu";
 import EditorToolbar from "./editor/EditorToolbar";
 import TableCellMenu from "./editor/TableCellMenu";
-import ImageHandler from "./editor/ImageHandler";
+import ImagePreviewModal from "./editor/ImagePreviewModal";
 import { Button } from "./ui/button";
 import { Eye } from "lucide-react";
 
@@ -21,6 +21,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   const { toast } = useToast();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<{ src: string; alt?: string } | null>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -85,19 +86,15 @@ export default function NoteEditor({ note }: NoteEditorProps) {
         }
         return false;
       },
-      handleKeyDown: (view, event) => {
-        if (event.key === 'Backspace' || event.key === 'Delete') {
-          const { state } = view;
-          const { selection } = state;
-          const { empty, anchor } = selection;
-
-          if (!empty) {
-            return false;
-          }
-
-          const node = state.doc.nodeAt(anchor);
-          if (node?.type.name === 'image') {
-            view.dispatch(state.tr.delete(anchor - 1, anchor + 1));
+      handleClick: (view, pos, event) => {
+        const node = view.state.doc.nodeAt(pos);
+        if (node?.type.name === 'image') {
+          const dom = event.target as HTMLElement;
+          if (dom.tagName === 'IMG') {
+            setSelectedImage({
+              src: node.attrs.src,
+              alt: node.attrs.alt,
+            });
             return true;
           }
         }
@@ -112,7 +109,9 @@ export default function NoteEditor({ note }: NoteEditorProps) {
       }
     },
     onSelectionUpdate: ({ editor }) => {
-      setIsMenuVisible(editor.state.selection.content().size > 0);
+      const isTextSelection = editor.state.selection.content().size > 0 && 
+                            !editor.isActive('image');
+      setIsMenuVisible(isTextSelection);
     },
   });
 
@@ -212,6 +211,13 @@ export default function NoteEditor({ note }: NoteEditorProps) {
         )}
         <EditorContent editor={editor} />
         {editor?.isActive('table') && <TableCellMenu editor={editor} />}
+        {selectedImage && (
+          <ImagePreviewModal
+            src={selectedImage.src}
+            alt={selectedImage.alt}
+            onClose={() => setSelectedImage(null)}
+          />
+        )}
       </div>
     </div>
   );
