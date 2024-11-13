@@ -40,28 +40,16 @@ export default function TableCellMenu({ editor }: TableCellMenuProps) {
 
   if (!hoveredCell) return null;
 
-  const cellRect = hoveredCell.getBoundingClientRect();
-  const editorRect = editor.view.dom.getBoundingClientRect();
-
   return (
-    <div 
-      className="table-menu absolute z-50"
-      style={{ 
-        top: cellRect.top - editorRect.top + 4,
-        left: cellRect.right - editorRect.left - 32,
-        pointerEvents: 'none',
-      }}
-    >
-      <div style={{ pointerEvents: 'auto' }}>
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger>
-            <TableMenuButton />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <TableMenuItems editor={editor} copyTableAs={() => {}} />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+    <div className="table-menu">
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger>
+          <TableMenuButton />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <TableMenuItems editor={editor} copyTableAs={() => {}} />
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

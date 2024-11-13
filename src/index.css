@@ -67,8 +67,8 @@
   .ProseMirror table td,
   .ProseMirror table th {
     @apply border border-border p-2 relative;
-    width: 100px;
     min-width: 100px;
+    width: 100px;
     max-width: 100px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -87,11 +87,11 @@
   }
 
   .table-menu {
-    display: none;
+    @apply absolute top-1 right-1 opacity-0 transition-opacity duration-200;
   }
 
-  .ProseMirror table td:hover .table-menu,
-  .ProseMirror table th:hover .table-menu {
-    display: block;
+  .ProseMirror td:hover .table-menu,
+  .ProseMirror th:hover .table-menu {
+    @apply opacity-100;
   }
 }
