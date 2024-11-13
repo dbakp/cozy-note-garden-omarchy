@@ -74,6 +74,21 @@
     text-overflow: ellipsis;
   }
 
+  .ProseMirror table td[data-text-align='left'],
+  .ProseMirror table th[data-text-align='left'] {
+    @apply text-left;
+  }
+
+  .ProseMirror table td[data-text-align='center'],
+  .ProseMirror table th[data-text-align='center'] {
+    @apply text-center;
+  }
+
+  .ProseMirror table td[data-text-align='right'],
+  .ProseMirror table th[data-text-align='right'] {
+    @apply text-right;
+  }
+
   .ProseMirror table th {
     @apply bg-muted font-semibold;
   }

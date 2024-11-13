@@ -35,7 +35,7 @@ export default function TableMenuItems({ editor, copyTableAs }: TableMenuItemsPr
   const setColumnAlignment = (alignment: 'left' | 'center' | 'right') => {
     editor.chain()
       .focus()
-      .updateAttributes('tableCell', { textAlign: alignment })
+      .setCellAttribute('textAlign', alignment)
       .run();
     
     toast({ description: `Column aligned ${alignment}` });
