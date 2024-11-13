@@ -12,9 +12,6 @@ import Table from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
-import { ReactRenderer } from '@tiptap/react';
-import tippy from 'tippy.js';
-import ImagePreviewModal from './ImagePreviewModal';
 
 export const editorExtensions = [
   StarterKit,
@@ -24,7 +21,6 @@ export const editorExtensions = [
     },
     allowBase64: true,
     inline: true,
-    draggable: true,
     resizable: true,
   }),
   TaskList,
