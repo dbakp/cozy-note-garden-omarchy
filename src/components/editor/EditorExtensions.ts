@@ -21,7 +21,6 @@ export const editorExtensions = [
     },
     allowBase64: true,
     inline: true,
-    resizable: true,
   }),
   TaskList,
   TaskItem.configure({
