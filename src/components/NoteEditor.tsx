@@ -84,6 +84,24 @@ export default function NoteEditor({ note }: NoteEditorProps) {
         }
         return false;
       },
+      handleKeyDown: (view, event) => {
+        if (event.key === 'Backspace' || event.key === 'Delete') {
+          const { state } = view;
+          const { selection } = state;
+          const { empty, anchor } = selection;
+
+          if (!empty) {
+            return false;
+          }
+
+          const node = state.doc.nodeAt(anchor);
+          if (node?.type.name === 'image') {
+            view.dispatch(state.tr.delete(anchor - 1, anchor + 1));
+            return true;
+          }
+        }
+        return false;
+      },
     },
     onUpdate: ({ editor }) => {
       if (note?.id) {

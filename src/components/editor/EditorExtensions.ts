@@ -17,7 +17,7 @@ export const editorExtensions = [
   StarterKit,
   Image.configure({
     HTMLAttributes: {
-      class: 'rounded-lg shadow-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity',
+      class: 'max-w-full h-auto my-4 rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity',
     },
     allowBase64: true,
     inline: true,
