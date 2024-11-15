@@ -11,7 +11,7 @@ export default function MobileNoteEditor() {
   const note = notes.find(n => n.id === noteId);
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-screen bg-background touch-manipulation">
       <div className="flex items-center border-b p-2">
         <Button 
           variant="ghost" 
