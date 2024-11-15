@@ -1,5 +1,6 @@
 import { Editor } from '@tiptap/react';
 import { EditorView } from 'prosemirror-view';
+import { handleFileUpload } from './ImageHandler';
 
 type EditorProps = {
   attributes?: Record<string, string>;
