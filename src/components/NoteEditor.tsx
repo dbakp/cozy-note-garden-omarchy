@@ -69,14 +69,15 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     content: note?.content || "",
     editorProps: {
       attributes: {
-        class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4 touch-manipulation',
+        class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4',
       },
       handleDOMEvents: {
-        touchstart: (view, event) => {
-          // Prevent default only for specific elements that might interfere
-          const target = event.target as HTMLElement;
-          if (target.tagName === 'TD' || target.tagName === 'TH') {
-            event.preventDefault();
+        touchstart: () => false, // Don't prevent default behavior for touchstart
+        touchmove: () => false,  // Don't prevent default behavior for touchmove
+        keydown: (_, event) => {
+          // Ensure space key events are not prevented
+          if (event.key === ' ' || event.code === 'Space') {
+            return false;
           }
           return false;
         },
