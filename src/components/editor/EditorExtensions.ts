@@ -15,7 +15,7 @@ import TableHeader from '@tiptap/extension-table-header';
 
 export const editorExtensions = [
   StarterKit.configure({
-    codeBlock: false, // Disable default codeBlock to prevent duplicate
+    codeBlock: false,
   }),
   Image.configure({
     HTMLAttributes: {
@@ -27,7 +27,6 @@ export const editorExtensions = [
   TaskList,
   TaskItem.configure({
     nested: true,
-    onReadOnlyChecked: () => true,
     HTMLAttributes: {
       class: 'task-item',
     },
@@ -39,12 +38,11 @@ export const editorExtensions = [
   }),
   Underline,
   TextAlign.configure({
-    types: ['heading', 'paragraph', 'tableCell', 'tableHeader'],
+    types: ['heading', 'paragraph'],
   }),
   CodeBlock,
   Table.configure({
     resizable: false,
-    allowTableNodeSelection: true,
     HTMLAttributes: {
       class: 'w-full table-fixed my-4',
     },

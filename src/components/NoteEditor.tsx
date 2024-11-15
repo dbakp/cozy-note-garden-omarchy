@@ -10,6 +10,7 @@ import TableCellMenu from "./editor/TableCellMenu";
 import ImagePreviewModal from "./editor/ImagePreviewModal";
 import { Button } from "./ui/button";
 import { Eye } from "lucide-react";
+import { createEditorProps } from "./editor/EditorConfig";
 
 interface NoteEditorProps {
   note?: Note;
@@ -32,87 +33,12 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     return [...new Set(matches)];
   };
 
-  const handleFileUpload = async (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Invalid file type",
-        description: "Please upload an image file",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result && editor) {
-          editor.chain().focus().setImage({ src: e.target.result as string }).run();
-        }
-      };
-      reader.readAsDataURL(file);
-
-      toast({
-        title: "Image uploaded",
-        description: "Your image has been added to the note",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to upload image",
-        variant: "destructive",
-      });
-    }
-  };
-
   const editor = useEditor({
     extensions: editorExtensions,
     content: note?.content || "",
-    editorProps: {
-      attributes: {
-        class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4',
-      },
-      handleDOMEvents: {
-        touchstart: () => false, // Don't prevent default behavior for touchstart
-        touchmove: () => false,  // Don't prevent default behavior for touchmove
-        keydown: (_, event) => {
-          // Ensure space key events are not prevented
-          if (event.key === ' ' || event.code === 'Space') {
-            return false;
-          }
-          return false;
-        },
-      },
-      handleDrop: (view, event, slice, moved) => {
-        if (!moved && event.dataTransfer?.files.length) {
-          const file = event.dataTransfer.files[0];
-          handleFileUpload(file);
-          return true;
-        }
-        return false;
-      },
-      handlePaste: (view, event) => {
-        if (event.clipboardData?.files.length) {
-          const file = event.clipboardData.files[0];
-          handleFileUpload(file);
-          return true;
-        }
-        return false;
-      },
-      handleClick: (view, pos, event) => {
-        const node = view.state.doc.nodeAt(pos);
-        if (node?.type.name === 'image') {
-          const dom = event.target as HTMLElement;
-          if (dom.tagName === 'IMG') {
-            setSelectedImage({
-              src: node.attrs.src,
-              alt: node.attrs.alt,
-            });
-            return true;
-          }
-        }
-        return false;
-      },
-    },
+    editorProps: createEditorProps(editor, (title, description, variant) => 
+      toast({ title, description, variant })
+    ),
     onUpdate: ({ editor }) => {
       if (note?.id) {
         const content = editor.getHTML();
@@ -146,17 +72,6 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     }
   };
 
-  const handleImageUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFileUpload(file);
-    }
-  };
-
   if (!note) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-400">
@@ -170,7 +85,14 @@ export default function NoteEditor({ note }: NoteEditorProps) {
       <input
         type="file"
         ref={fileInputRef}
-        onChange={handleFileInputChange}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) {
+            handleFileUpload(file, (title, description, variant) => 
+              toast({ title, description, variant })
+            );
+          }
+        }}
         accept="image/*"
         className="hidden"
       />
@@ -197,7 +119,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
       )}
       <EditorToolbar 
         editor={editor} 
-        onImageUpload={handleImageUploadClick}
+        onImageUpload={() => fileInputRef.current?.click()}
         onInsertCheckbox={() => {
           editor?.chain().focus().toggleTaskList().run();
           toast({
