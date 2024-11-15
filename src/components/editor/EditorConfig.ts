@@ -15,22 +15,37 @@ export const createEditorProps = (
 ): Partial<EditorProps> => ({
   attributes: {
     class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4',
+    spellcheck: 'true',
   },
   handleDOMEvents: {
-    keydown: () => {
+    keydown: (view, event) => {
       // Allow all keyboard events to pass through
       return false;
     },
-    touchstart: () => {
-      // Allow touch events to pass through
+    touchstart: (view, event) => {
+      // Prevent default touch behavior that might interfere with typing
+      event.stopPropagation();
       return false;
     },
-    touchmove: () => {
-      // Allow touch move events to pass through
+    touchmove: (view, event) => {
+      // Allow touch move events for scrolling
       return false;
     },
-    click: () => {
-      // Allow click events to pass through
+    touchend: (view, event) => {
+      // Prevent default touch behavior that might interfere with typing
+      event.stopPropagation();
+      return false;
+    },
+    input: (view, event) => {
+      // Allow all input events to pass through
+      return false;
+    },
+    compositionstart: (view, event) => {
+      // Allow composition events (important for IME input)
+      return false;
+    },
+    compositionend: (view, event) => {
+      // Allow composition events (important for IME input)
       return false;
     },
   },
