@@ -63,7 +63,7 @@ export default function Sidebar() {
       <div className="flex flex-col h-full">
         <div className="p-4 flex-1">
           <CollapsibleTrigger className="w-full flex items-center justify-between mb-6">
-            {(isExpanded || !isMobile) && <h1 className="text-xl font-semibold text-primary">Notes</h1>}
+            {isExpanded && <h1 className="text-xl font-semibold text-primary">Notes</h1>}
             <ChevronRight className={cn(
               "w-5 h-5 transition-transform",
               isExpanded ? "rotate-90" : "rotate-0"
