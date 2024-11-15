@@ -61,19 +61,20 @@ export default function Sidebar() {
       )}
     >
       <div className="flex flex-col h-full">
-        <CollapsibleTrigger className="p-4 w-full flex items-center justify-between">
-          <ChevronRight className={cn(
-            "w-5 h-5 transition-transform",
-            isExpanded ? "rotate-90" : "rotate-0"
-          )} />
-        </CollapsibleTrigger>
+        <div className="flex items-center justify-between p-4">
+          {isExpanded && <h1 className="text-xl font-semibold text-primary">Notes</h1>}
+          <CollapsibleTrigger className="p-2 hover:bg-accent rounded-md">
+            <ChevronRight className={cn(
+              "w-5 h-5 transition-transform",
+              isExpanded ? "rotate-90" : "rotate-0"
+            )} />
+          </CollapsibleTrigger>
+        </div>
 
         {isExpanded && (
           <div className="flex flex-col h-full">
             <div className="flex-1 overflow-hidden">
               <div className="p-4">
-                <h1 className="text-xl font-semibold text-primary mb-6">Notes</h1>
-
                 <Droppable droppableId="all-notes">
                   {(provided, snapshot) => (
                     <div 
