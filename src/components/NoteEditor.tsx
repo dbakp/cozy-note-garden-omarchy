@@ -33,12 +33,14 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     return [...new Set(matches)];
   };
 
+  const handleToast = (title: string, description: string, variant?: "default" | "destructive") => {
+    toast({ title, description, variant });
+  };
+
   const editor = useEditor({
     extensions: editorExtensions,
     content: note?.content || "",
-    editorProps: createEditorProps(editor, (title, description, variant) => 
-      toast({ title, description, variant })
-    ),
+    editorProps: createEditorProps(null, handleToast),
     onUpdate: ({ editor }) => {
       if (note?.id) {
         const content = editor.getHTML();

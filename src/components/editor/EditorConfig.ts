@@ -1,26 +1,21 @@
-import { Editor } from '@tiptap/react';
+import { Editor, EditorProps } from '@tiptap/react';
+import { EditorView } from 'prosemirror-view';
 import { handleFileUpload } from './ImageHandler';
 
-export const createEditorProps = (editor: Editor | null, handleToast: (title: string, description: string, variant?: "default" | "destructive") => void) => ({
+export const createEditorProps = (
+  editor: Editor | null, 
+  handleToast: (title: string, description: string, variant?: "default" | "destructive") => void
+): Partial<EditorProps> => ({
   attributes: {
     class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4',
   },
   handleDOMEvents: {
-    keydown: () => false,
-    touchstart: () => false,
-    touchmove: () => false,
-    click: (view: any, pos: number, event: any) => {
-      const node = view.state.doc.nodeAt(pos);
-      if (node?.type.name === 'image') {
-        const dom = event.target as HTMLElement;
-        if (dom.tagName === 'IMG') {
-          return true;
-        }
-      }
-      return false;
-    },
+    keydown: (_view: EditorView, _event: KeyboardEvent) => false,
+    touchstart: (_view: EditorView, _event: TouchEvent) => false,
+    touchmove: (_view: EditorView, _event: TouchEvent) => false,
+    click: (_view: EditorView, _event: MouseEvent) => false,
   },
-  handlePaste: (view: any, event: any) => {
+  handlePaste: (view: EditorView, event: ClipboardEvent) => {
     if (event.clipboardData?.files.length) {
       const file = event.clipboardData.files[0];
       handleFileUpload(file, handleToast);
@@ -28,7 +23,7 @@ export const createEditorProps = (editor: Editor | null, handleToast: (title: st
     }
     return false;
   },
-  handleDrop: (view: any, event: any, slice: any, moved: boolean) => {
+  handleDrop: (view: EditorView, event: DragEvent, _slice: any, moved: boolean) => {
     if (!moved && event.dataTransfer?.files.length) {
       const file = event.dataTransfer.files[0];
       handleFileUpload(file, handleToast);
