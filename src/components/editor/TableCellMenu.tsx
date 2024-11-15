@@ -12,6 +12,16 @@ interface TableCellMenuProps {
 export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, right: 0 });
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const updateButtonPosition = () => {
@@ -33,10 +43,18 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
       const cellRect = lastCell.getBoundingClientRect();
       const editorRect = dom.getBoundingClientRect();
 
-      setPosition({
-        top: cellRect.top - editorRect.top + 4,
-        right: editorRect.right - cellRect.right - 4,
-      });
+      // Adjust position for mobile
+      if (isMobile) {
+        setPosition({
+          top: cellRect.top - editorRect.top + 4,
+          right: 4, // Fixed right position for mobile
+        });
+      } else {
+        setPosition({
+          top: cellRect.top - editorRect.top + 4,
+          right: editorRect.right - cellRect.right - 4,
+        });
+      }
     };
 
     const handleFocus = () => {
@@ -47,6 +65,14 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
     };
 
     const handleMouseEnter = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (target.closest('table')) {
+        setIsVisible(true);
+        updateButtonPosition();
+      }
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
       const target = event.target as HTMLElement;
       if (target.closest('table')) {
         setIsVisible(true);
@@ -78,6 +104,7 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
 
     editorDom.addEventListener('mouseenter', handleMouseEnter);
     editorDom.addEventListener('mouseleave', handleMouseLeave);
+    editorDom.addEventListener('touchstart', handleTouchStart);
     editorDom.addEventListener('focus', handleFocus, true);
 
     updateButtonPosition();
@@ -86,9 +113,10 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
       observer.disconnect();
       editorDom.removeEventListener('mouseenter', handleMouseEnter);
       editorDom.removeEventListener('mouseleave', handleMouseLeave);
+      editorDom.removeEventListener('touchstart', handleTouchStart);
       editorDom.removeEventListener('focus', handleFocus, true);
     };
-  }, [editor]);
+  }, [editor, isMobile]);
 
   const copyTableAs = (format: 'markdown' | 'html' | 'csv') => {
     editor.chain().focus();
@@ -120,7 +148,7 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
 
   return (
     <div 
-      className="table-menu absolute z-50"
+      className={`table-menu absolute z-50 ${isMobile ? 'touch-manipulation' : ''}`}
       style={{ 
         top: `${position.top}px`, 
         right: `${position.right}px`,
@@ -132,7 +160,7 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
           <DropdownMenuTrigger>
             <TableMenuButton />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align={isMobile ? "start" : "end"}>
             <TableMenuItems editor={editor} copyTableAs={copyTableAs} />
           </DropdownMenuContent>
         </DropdownMenu>
