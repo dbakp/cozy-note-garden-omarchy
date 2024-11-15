@@ -14,7 +14,9 @@ import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 
 export const editorExtensions = [
-  StarterKit,
+  StarterKit.configure({
+    codeBlock: false, // Disable default codeBlock to prevent duplicate
+  }),
   Image.configure({
     HTMLAttributes: {
       class: 'max-w-full h-auto my-4 rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity',
@@ -44,7 +46,7 @@ export const editorExtensions = [
     resizable: false,
     allowTableNodeSelection: true,
     HTMLAttributes: {
-      class: 'w-full table-fixed',
+      class: 'w-full table-fixed my-4',
     },
   }),
   TableRow,

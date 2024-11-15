@@ -24,6 +24,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   const [selectedImage, setSelectedImage] = useState<{ src: string; alt?: string } | null>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   const extractTags = (content: string): string[] => {
     const regex = /#[\w-]+/g;
@@ -68,7 +69,17 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     content: note?.content || "",
     editorProps: {
       attributes: {
-        class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4',
+        class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4 touch-manipulation',
+      },
+      handleDOMEvents: {
+        touchstart: (view, event) => {
+          // Prevent default only for specific elements that might interfere
+          const target = event.target as HTMLElement;
+          if (target.tagName === 'TD' || target.tagName === 'TH') {
+            event.preventDefault();
+          }
+          return false;
+        },
       },
       handleDrop: (view, event, slice, moved) => {
         if (!moved && event.dataTransfer?.files.length) {
@@ -154,7 +165,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   }
 
   return (
-    <div className="flex-1 flex flex-col h-screen relative">
+    <div className="flex-1 flex flex-col h-screen relative" ref={editorRef}>
       <input
         type="file"
         ref={fileInputRef}
