@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { FolderPlus, ChevronRight, Inbox } from "lucide-react";
 import Tags from "./Tags";
