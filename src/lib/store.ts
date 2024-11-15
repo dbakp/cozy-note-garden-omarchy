@@ -1,5 +1,8 @@
 import { create } from 'zustand';
 import { Note, Folder } from './types';
+import { noteOperations } from './noteOperations';
+import { folderOperations } from './folderOperations';
+import { tagOperations } from './tagOperations';
 
 interface NoteStore {
   notes: Note[];
@@ -7,7 +10,7 @@ interface NoteStore {
   tags: string[];
   selectedTag: string | null;
   selectedFolderId: string | null;
-  addNote: (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  addNote: (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => Note;
   updateNote: (id: string, updates: Partial<Note>) => void;
   addFolder: (folder: Omit<Folder, 'id'>) => void;
   updateFolder: (id: string, updates: Partial<Folder>) => void;
@@ -20,6 +23,7 @@ interface NoteStore {
   deleteTag: (tagToDelete: string) => void;
 }
 
+// Create separate files for operations
 export const useNoteStore = create<NoteStore>((set) => ({
   notes: [],
   folders: [],
@@ -27,19 +31,21 @@ export const useNoteStore = create<NoteStore>((set) => ({
   selectedTag: null,
   selectedFolderId: null,
   
-  addNote: (note) =>
+  addNote: (note) => {
+    const newNote = {
+      ...note,
+      tags: note.tags || [],
+      id: crypto.randomUUID(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
     set((state) => ({
-      notes: [
-        {
-          ...note,
-          tags: note.tags || [],
-          id: crypto.randomUUID(),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        ...state.notes,
-      ],
-    })),
+      notes: [newNote, ...state.notes],
+    }));
+
+    return newNote;
+  },
 
   updateNote: (id, updates) =>
     set((state) => {

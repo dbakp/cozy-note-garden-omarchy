@@ -21,10 +21,8 @@ export default function NotesList({ onNoteSelect, selectedNote }: NotesListProps
       tags: [],
     };
     
-    addNote(newNote);
-    if (notes.length > 0) {
-      onNoteSelect(notes[0]);
-    }
+    const createdNote = addNote(newNote);
+    onNoteSelect(createdNote);
   };
 
   const filteredNotes = notes.filter(note => {
