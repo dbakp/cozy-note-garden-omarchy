@@ -14,26 +14,33 @@ export const createEditorProps = (
   handleToast: (title: string, description: string, variant?: "default" | "destructive") => void
 ): Partial<EditorProps> => ({
   attributes: {
-    class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4',
+    class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4 touch-manipulation',
     spellcheck: 'true',
+    autocomplete: 'on',
+    autocorrect: 'on',
+    autocapitalize: 'on',
+    enterkeyhint: 'enter',
+    inputmode: 'text',
   },
   handleDOMEvents: {
     keydown: (view, event) => {
-      // Allow all keyboard events to pass through
+      // Let all keyboard events pass through
       return false;
     },
     touchstart: (view, event) => {
-      // Prevent default touch behavior that might interfere with typing
-      event.stopPropagation();
+      // Don't prevent default touch behavior to allow normal touch interactions
       return false;
     },
     touchmove: (view, event) => {
-      // Allow touch move events for scrolling
+      // Don't prevent default touch behavior to allow scrolling
       return false;
     },
     touchend: (view, event) => {
-      // Prevent default touch behavior that might interfere with typing
-      event.stopPropagation();
+      // Don't prevent default touch behavior
+      return false;
+    },
+    beforeinput: (view, event) => {
+      // Allow all input events to pass through
       return false;
     },
     input: (view, event) => {
@@ -44,10 +51,22 @@ export const createEditorProps = (
       // Allow composition events (important for IME input)
       return false;
     },
-    compositionend: (view, event) => {
-      // Allow composition events (important for IME input)
+    compositionupdate: (view, event) => {
+      // Allow composition updates
       return false;
     },
+    compositionend: (view, event) => {
+      // Allow composition events
+      return false;
+    },
+    focus: (view, event) => {
+      // Handle focus events
+      return false;
+    },
+    blur: (view, event) => {
+      // Handle blur events
+      return false;
+    }
   },
   handlePaste: (view: EditorView, event: ClipboardEvent) => {
     if (event.clipboardData?.files.length) {

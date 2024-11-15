@@ -54,6 +54,9 @@ export default function NoteEditor({ note }: NoteEditorProps) {
                             !editor.isActive('image');
       setIsMenuVisible(isTextSelection);
     },
+    enableInputRules: true,
+    enablePasteRules: true,
+    autofocus: 'end',
   });
 
   useEffect(() => {

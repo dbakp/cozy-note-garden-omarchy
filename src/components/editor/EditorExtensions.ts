@@ -16,6 +16,10 @@ import TableHeader from '@tiptap/extension-table-header';
 export const editorExtensions = [
   StarterKit.configure({
     codeBlock: false,
+    history: {
+      depth: 100,
+      newGroupDelay: 500
+    }
   }),
   Image.configure({
     HTMLAttributes: {
@@ -32,7 +36,14 @@ export const editorExtensions = [
     },
   }),
   Highlight,
-  Typography,
+  Typography.configure({
+    openDoubleQuote: false,
+    closeDoubleQuote: false,
+    openSingleQuote: false,
+    closeSingleQuote: false,
+    emDash: false,
+    ellipsis: false,
+  }),
   Link.configure({
     openOnClick: false,
   }),
