@@ -1,6 +1,5 @@
 import { Editor } from '@tiptap/react';
 import { EditorView } from 'prosemirror-view';
-import { handleFileUpload } from './ImageHandler';
 
 type EditorProps = {
   attributes?: Record<string, string>;
@@ -17,10 +16,22 @@ export const createEditorProps = (
     class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4',
   },
   handleDOMEvents: {
-    keydown: (_view: EditorView, _event: Event) => false,
-    touchstart: (_view: EditorView, _event: Event) => false,
-    touchmove: (_view: EditorView, _event: Event) => false,
-    click: (_view: EditorView, _event: Event) => false,
+    keydown: () => {
+      // Allow all keyboard events to pass through
+      return false;
+    },
+    touchstart: () => {
+      // Allow touch events to pass through
+      return false;
+    },
+    touchmove: () => {
+      // Allow touch move events to pass through
+      return false;
+    },
+    click: () => {
+      // Allow click events to pass through
+      return false;
+    },
   },
   handlePaste: (view: EditorView, event: ClipboardEvent) => {
     if (event.clipboardData?.files.length) {
