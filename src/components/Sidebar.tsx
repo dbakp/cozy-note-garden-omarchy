@@ -24,9 +24,6 @@ export default function Sidebar() {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      if (!mobile) {
-        setIsExpanded(true);
-      }
     };
 
     window.addEventListener('resize', handleResize);
@@ -58,8 +55,9 @@ export default function Sidebar() {
       onOpenChange={setIsExpanded}
       className={cn(
         "border-r h-screen transition-all duration-300 overflow-hidden flex-shrink-0",
-        isExpanded ? "w-64 min-w-[16rem]" : "w-12 min-w-[3rem]",
-        "md:w-64 md:min-w-[16rem]"
+        isExpanded ? "w-64" : "w-12",
+        isMobile && "w-12 min-w-[3rem]",
+        isMobile && isExpanded && "w-64 min-w-[16rem]"
       )}
     >
       <div className="flex flex-col h-full">
@@ -68,7 +66,7 @@ export default function Sidebar() {
             {(isExpanded || !isMobile) && <h1 className="text-xl font-semibold text-primary">Notes</h1>}
             <ChevronRight className={cn(
               "w-5 h-5 transition-transform",
-              isExpanded ? "rotate-180" : "rotate-0"
+              isExpanded ? "rotate-90" : "rotate-0"
             )} />
           </CollapsibleTrigger>
 
