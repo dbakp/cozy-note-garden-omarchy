@@ -23,7 +23,7 @@ export function FolderButton({
       onClick={onClick}
       className={cn(
         "w-full flex items-center transition-colors rounded-lg text-sm",
-        isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center",
+        isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center md:px-3 md:py-2 md:space-x-2",
         isSelected 
           ? "bg-primary/10 text-primary hover:bg-primary/15" 
           : "text-gray-600 hover:bg-gray-100"
@@ -31,7 +31,7 @@ export function FolderButton({
     >
       <span className={cn(
         "flex items-center justify-center",
-        !isExpanded && "w-full"
+        !isExpanded && "w-full md:w-auto"
       )}>
         {icon}
       </span>

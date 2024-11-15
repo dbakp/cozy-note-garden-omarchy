@@ -14,10 +14,24 @@ import { FolderButton } from "./FolderButton";
 
 export default function Sidebar() {
   const { folders, notes, selectedFolderId, setSelectedFolderId, addFolder } = useNoteStore();
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(window.innerWidth >= 768);
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [selectedIcon, setSelectedIcon] = useState("book");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setIsExpanded(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleCreateFolder = () => {
     if (newFolderName.trim()) {
@@ -44,13 +58,14 @@ export default function Sidebar() {
       onOpenChange={setIsExpanded}
       className={cn(
         "border-r h-screen transition-all duration-300 overflow-hidden flex-shrink-0",
-        isExpanded ? "w-64 min-w-[16rem]" : "w-12 min-w-[3rem]"
+        isExpanded ? "w-64 min-w-[16rem]" : "w-12 min-w-[3rem]",
+        "md:w-64 md:min-w-[16rem]"
       )}
     >
       <div className="flex flex-col h-full">
         <div className="p-4 flex-1">
           <CollapsibleTrigger className="w-full flex items-center justify-between mb-6">
-            {isExpanded && <h1 className="text-xl font-semibold text-primary">Notes</h1>}
+            {(isExpanded || !isMobile) && <h1 className="text-xl font-semibold text-primary">Notes</h1>}
             <ChevronRight className={cn(
               "w-5 h-5 transition-transform",
               isExpanded ? "rotate-180" : "rotate-0"

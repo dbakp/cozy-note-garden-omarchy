@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/lib/theme-provider";
 import Index from "./pages/Index";
+import MobileNoteEditor from "./components/MobileNoteEditor";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/note/:noteId" element={<MobileNoteEditor />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
