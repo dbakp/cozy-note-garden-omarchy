@@ -11,6 +11,7 @@ import ImagePreviewModal from "./editor/ImagePreviewModal";
 import { Button } from "./ui/button";
 import { Eye } from "lucide-react";
 import { createEditorProps } from "./editor/EditorConfig";
+import { handleFileUpload } from './editor/ImageHandler';
 
 interface NoteEditorProps {
   note?: Note;
@@ -74,6 +75,13 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file, editor, handleToast);
+    }
+  };
+
   if (!note) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-400">
@@ -87,14 +95,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
       <input
         type="file"
         ref={fileInputRef}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            handleFileUpload(file, (title, description, variant) => 
-              toast({ title, description, variant })
-            );
-          }
-        }}
+        onChange={handleFileChange}
         accept="image/*"
         className="hidden"
       />

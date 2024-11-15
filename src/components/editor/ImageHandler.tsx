@@ -2,6 +2,7 @@ import { Editor } from '@tiptap/react';
 
 export const handleFileUpload = async (
   file: File,
+  editor: Editor | null,
   handleToast: (title: string, description: string, variant?: "default" | "destructive") => void
 ) => {
   if (!file.type.startsWith('image/')) {
@@ -12,8 +13,8 @@ export const handleFileUpload = async (
   const reader = new FileReader();
   reader.onload = (e) => {
     const result = e.target?.result;
-    if (typeof result === 'string') {
-      editor?.chain().focus().setImage({ src: result }).run();
+    if (typeof result === 'string' && editor) {
+      editor.chain().focus().setImage({ src: result }).run();
     }
   };
   reader.readAsDataURL(file);
