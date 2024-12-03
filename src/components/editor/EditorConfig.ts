@@ -94,14 +94,6 @@ export const createEditorProps = (
       return false;
     }
   },
-  handlePaste: (view: EditorView, event: ClipboardEvent) => {
-    if (event.clipboardData?.files?.length) {
-      event.preventDefault();
-      handlePastedFiles(event.clipboardData.files, editor, handleToast);
-      return true;
-    }
-    return false;
-  },
   handleDrop: (view: EditorView, event: DragEvent, _slice: any, moved: boolean) => {
     if (!moved && event.dataTransfer?.files?.length) {
       event.preventDefault();
