@@ -1,6 +1,6 @@
 import { Editor } from '@tiptap/react';
 import { EditorView } from 'prosemirror-view';
-import { handleFileUpload } from './ImageHandler';
+import { handleFileUpload, handlePastedFiles } from './ImageHandler';
 
 type EditorProps = {
   attributes?: Record<string, string>;
@@ -70,16 +70,14 @@ export const createEditorProps = (
   },
   handlePaste: (view: EditorView, event: ClipboardEvent) => {
     if (event.clipboardData?.files.length) {
-      const file = event.clipboardData.files[0];
-      handleFileUpload(file, editor, handleToast);
+      handlePastedFiles(event.clipboardData.files, editor, handleToast);
       return true;
     }
     return false;
   },
   handleDrop: (view: EditorView, event: DragEvent, _slice: any, moved: boolean) => {
     if (!moved && event.dataTransfer?.files.length) {
-      const file = event.dataTransfer.files[0];
-      handleFileUpload(file, editor, handleToast);
+      handlePastedFiles(event.dataTransfer.files, editor, handleToast);
       return true;
     }
     return false;

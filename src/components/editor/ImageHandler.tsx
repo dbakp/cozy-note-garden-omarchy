@@ -19,3 +19,9 @@ export const handleFileUpload = async (
   };
   reader.readAsDataURL(file);
 };
+
+export const handlePastedFiles = (files: FileList, editor: Editor | null, handleToast: (title: string, description: string, variant?: "default" | "destructive") => void) => {
+  Array.from(files).forEach(file => {
+    handleFileUpload(file, editor, handleToast);
+  });
+};
