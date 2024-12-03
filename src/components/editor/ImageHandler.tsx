@@ -15,6 +15,7 @@ export const handleFileUpload = async (
     const result = e.target?.result;
     if (typeof result === 'string' && editor) {
       editor.chain().focus().setImage({ src: result }).run();
+      handleToast('Success', 'Image added successfully', 'default');
     }
   };
   reader.readAsDataURL(file);
@@ -22,6 +23,8 @@ export const handleFileUpload = async (
 
 export const handlePastedFiles = (files: FileList, editor: Editor | null, handleToast: (title: string, description: string, variant?: "default" | "destructive") => void) => {
   Array.from(files).forEach(file => {
-    handleFileUpload(file, editor, handleToast);
+    if (file.type.startsWith('image/')) {
+      handleFileUpload(file, editor, handleToast);
+    }
   });
 };
