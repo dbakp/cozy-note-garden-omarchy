@@ -22,6 +22,32 @@ export const createEditorProps = (
     enterkeyhint: 'enter',
     inputmode: 'text',
   },
+  handlePaste: (view: EditorView, event: ClipboardEvent) => {
+    if (!editor) return false;
+
+    // Handle pasted images from clipboard
+    const items = Array.from(event.clipboardData?.items || []);
+    const imageItems = items.filter(item => item.type.startsWith('image/'));
+    
+    if (imageItems.length > 0) {
+      event.preventDefault();
+      imageItems.forEach(item => {
+        const blob = item.getAsFile();
+        if (blob) {
+          handleFileUpload(blob, editor, handleToast);
+        }
+      });
+      return true;
+    }
+
+    // Handle pasted files
+    if (event.clipboardData?.files?.length) {
+      event.preventDefault();
+      handlePastedFiles(event.clipboardData.files, editor, handleToast);
+      return true;
+    }
+    return false;
+  },
   handleDOMEvents: {
     keydown: (view, event) => {
       // Let all keyboard events pass through

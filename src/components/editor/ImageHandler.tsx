@@ -14,14 +14,21 @@ export const handleFileUpload = async (
   reader.onload = (e) => {
     const result = e.target?.result;
     if (typeof result === 'string' && editor) {
-      editor.chain().focus().setImage({ src: result }).run();
-      handleToast('Success', 'Image added successfully', 'default');
+      editor.chain().focus().setImage({ 
+        src: result,
+        alt: file.name,
+      }).run();
+      handleToast('Success', 'Image added successfully');
     }
   };
   reader.readAsDataURL(file);
 };
 
-export const handlePastedFiles = (files: FileList, editor: Editor | null, handleToast: (title: string, description: string, variant?: "default" | "destructive") => void) => {
+export const handlePastedFiles = (
+  files: FileList, 
+  editor: Editor | null, 
+  handleToast: (title: string, description: string, variant?: "default" | "destructive") => void
+) => {
   Array.from(files).forEach(file => {
     if (file.type.startsWith('image/')) {
       handleFileUpload(file, editor, handleToast);
