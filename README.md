@@ -1,71 +1,118 @@
-# Welcome to your GPT Engineer project
+# Cozy Note Garden for Omarchy
 
-## Project info
+[![CI](https://github.com/dbakp/cozy-note-garden-omarchy/actions/workflows/ci.yml/badge.svg)](https://github.com/dbakp/cozy-note-garden-omarchy/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/dbakp/cozy-note-garden-omarchy)](https://github.com/dbakp/cozy-note-garden-omarchy/releases/latest)
+[![MIT License](https://img.shields.io/badge/license-MIT-7aa2f7.svg)](LICENSE)
 
-**URL**: https://run.gptengineer.app/projects/aa09b95b-936c-4185-af66-c814e2fa4bcb/improve
+A calm, private, local-first notes app built to feel at home on [Omarchy](https://omarchy.org/). Cozy Note Garden runs as a native Tauri/WebKitGTK application, follows the active Omarchy theme and font, and stores every note on your own machine.
 
-## How can I edit this code?
+## Highlights
 
-There are several ways of editing your application.
+- Native Tauri desktop shell with single-instance behavior and remembered window size and position
+- Live Omarchy palette and monospace-font synchronization, including light themes
+- Rich-text editing with folders, tags, search, note moves, and drag-and-drop organization
+- Durable atomic storage using the Linux XDG directory layout
+- JSON backup export and import through native file dialogs
+- Offline runtime with no hosted scripts, accounts, analytics, or network dependency
+- Responsive layouts, polished transitions, and reduced-motion support
+- Omarchy launcher entry, scalable icon, installer, uninstaller, AppImage, and Arch `PKGBUILD`
 
-**Use GPT Engineer**
+## Install
 
-Simply visit the GPT Engineer project at [GPT Engineer](https://gptengineer.app/projects/aa09b95b-936c-4185-af66-c814e2fa4bcb/improve) and start prompting.
+### Download the AppImage
 
-Changes made via gptengineer.app will be committed automatically to this repo.
+Download the latest AppImage from [Releases](https://github.com/dbakp/cozy-note-garden-omarchy/releases/latest), then:
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in the GPT Engineer UI.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+chmod +x Cozy-Note-Garden-*.AppImage
+./Cozy-Note-Garden-*.AppImage
 ```
 
-**Edit a file directly in GitHub**
+### Build and install on Omarchy
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+git clone https://github.com/dbakp/cozy-note-garden-omarchy.git
+cd cozy-note-garden-omarchy
+./scripts/install-omarchy.sh
+```
 
-**Use GitHub Codespaces**
+The installer uses `omarchy pkg add` for the required build packages and installs only to your user directories:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- `~/.local/bin/cozy-note-garden`
+- `~/.local/share/applications/io.github.dbakp.cozynotegarden.desktop`
+- `~/.local/share/icons/hicolor/.../cozy-note-garden.*`
 
-## What technologies are used for this project?
+It does not edit `~/.config/hypr`, `~/.config/omarchy`, or anything under `/usr/share/omarchy`.
 
-This project is built with .
+To uninstall while preserving notes:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+./scripts/uninstall-omarchy.sh
+```
 
-## How can I deploy this project?
+Pass `--purge-data` only when you intentionally want the note library removed too.
 
-All GPT Engineer projects can be deployed directly via the GPT Engineer app.
+## Omarchy integration
 
-Simply visit your project at [GPT Engineer](https://gptengineer.app/projects/aa09b95b-936c-4185-af66-c814e2fa4bcb/improve) and click on Share -> Publish.
+When Appearance is set to **Omarchy** (the default), the native backend reads the current semantic palette from:
 
-## I want to use a custom domain - is that possible?
+```text
+~/.local/state/omarchy/current/theme/colors.toml
+```
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.gptengineer.app/tips-tricks/custom-domain/)
+The running app picks up theme changes automatically. It also uses the system `monospace` font resolved through fontconfig, so `omarchy font set …` is reflected without app-specific configuration. Light and dark overrides remain available in Settings.
+
+The app uses ordinary decorated GTK windows and needs no Hyprland rule. Omarchy and Hyprland remain responsible for borders, gaps, tiling, animations, and workspace behavior.
+
+## Data and privacy
+
+Notes never leave the device. The library lives at:
+
+```text
+~/.local/share/io.github.dbakp.cozynotegarden/garden.json
+```
+
+Writes use a temporary file followed by an atomic rename. A malformed library is copied to a timestamped recovery file before the app starts a fresh library.
+
+Use **Settings → Export backup** before moving machines or making large changes. Import validates the backup schema before replacing the open library.
+
+## Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl+N` | Create a note |
+| `Ctrl+F` | Focus search |
+| `Esc` | Close the active menu or dialog |
+
+## Development
+
+Tauri development on Arch and Omarchy needs Rust and WebKitGTK:
+
+```bash
+omarchy pkg add base-devel rust npm webkit2gtk-4.1 openssl librsvg
+npm ci
+npm run desktop:dev
+```
+
+Run the full local verification suite:
+
+```bash
+npm run typecheck
+npm run lint
+npm run build
+npm audit --omit=dev
+cargo test --manifest-path src-tauri/Cargo.toml --locked
+npm run desktop:build -- --no-bundle
+```
+
+Build a distributable AppImage with:
+
+```bash
+./scripts/build-appimage.sh
+```
+
+Release artifacts and their `SHA256SUMS` file are written to `dist-release/`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution and release process.
+
+## License
+
+Cozy Note Garden is released under the [MIT License](LICENSE).

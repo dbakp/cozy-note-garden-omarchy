@@ -12,6 +12,11 @@ const icons = [
   { id: "library-big", icon: LibraryBig },
 ];
 
+export function FolderIcon({ iconId, className = "h-4 w-4" }: { iconId: string; className?: string }) {
+  const Icon = icons.find((item) => item.id === iconId)?.icon ?? Book;
+  return <Icon className={className} />;
+}
+
 interface IconSelectorProps {
   selectedIcon: string;
   onSelectIcon: (iconId: string) => void;

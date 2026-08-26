@@ -45,6 +45,8 @@ export default function EditorToolbar({
   return (
     <div className="border-b p-2 flex flex-wrap gap-1 sticky top-0 bg-background z-10">
       <Button
+        aria-label="Heading"
+        title="Heading"
         variant="ghost"
         size="icon"
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
@@ -53,6 +55,8 @@ export default function EditorToolbar({
         <Heading className="h-4 w-4" />
       </Button>
       <Button
+        aria-label="Task list"
+        title="Task list"
         variant="ghost"
         size="icon"
         onClick={onInsertCheckbox}
@@ -61,6 +65,8 @@ export default function EditorToolbar({
         <ListTodo className="h-4 w-4" />
       </Button>
       <Button
+        aria-label="Bullet list"
+        title="Bullet list"
         variant="ghost"
         size="icon"
         onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -69,6 +75,8 @@ export default function EditorToolbar({
         <List className="h-4 w-4" />
       </Button>
       <Button
+        aria-label="Bold"
+        title="Bold"
         variant="ghost"
         size="icon"
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -77,6 +85,8 @@ export default function EditorToolbar({
         <Bold className="h-4 w-4" />
       </Button>
       <Button
+        aria-label="Italic"
+        title="Italic"
         variant="ghost"
         size="icon"
         onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -85,6 +95,8 @@ export default function EditorToolbar({
         <Italic className="h-4 w-4" />
       </Button>
       <Button
+        aria-label="Highlight"
+        title="Highlight"
         variant="ghost"
         size="icon"
         onClick={() => editor.chain().focus().toggleHighlight().run()}
@@ -93,6 +105,8 @@ export default function EditorToolbar({
         <Highlighter className="h-4 w-4" />
       </Button>
       <Button
+        aria-label="Add link"
+        title="Add link"
         variant="ghost"
         size="icon"
         onClick={setLink}
@@ -101,6 +115,8 @@ export default function EditorToolbar({
         <Link className="h-4 w-4" />
       </Button>
       <Button
+        aria-label="Insert table"
+        title="Insert table"
         variant="ghost"
         size="icon"
         onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
@@ -109,6 +125,8 @@ export default function EditorToolbar({
         <Table className="h-4 w-4" />
       </Button>
       <Button
+        aria-label="Insert image"
+        title="Insert image"
         variant="ghost"
         size="icon"
         onClick={onImageUpload}

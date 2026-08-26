@@ -26,7 +26,7 @@ export function FolderButton({
         isExpanded ? "px-3 py-2 space-x-2" : "h-10 justify-center md:px-3 md:py-2 md:space-x-2",
         isSelected 
           ? "bg-primary/10 text-primary hover:bg-primary/15" 
-          : "text-gray-600 hover:bg-gray-100"
+          : "text-muted-foreground hover:bg-accent hover:text-foreground"
       )}
     >
       <span className={cn(
@@ -38,7 +38,7 @@ export function FolderButton({
       {isExpanded && (
         <>
           <span className="flex-1 text-left">{name}</span>
-          <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+          <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
             {count}
           </span>
         </>

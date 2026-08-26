@@ -1,20 +1,16 @@
 import { Editor } from '@tiptap/react';
-import { EditorView } from 'prosemirror-view';
+import type { EditorProps } from '@tiptap/pm/view';
 import { handleFileUpload, handlePastedFiles } from './ImageHandler';
-
-type EditorProps = {
-  attributes?: Record<string, string>;
-  handleDOMEvents?: Record<string, (view: EditorView, event: Event) => boolean | void>;
-  handlePaste?: (view: EditorView, event: ClipboardEvent) => boolean;
-  handleDrop?: (view: EditorView, event: DragEvent, slice: any, moved: boolean) => boolean;
-};
 
 export const createEditorProps = (
   editor: Editor | null, 
   handleToast: (title: string, description: string, variant?: "default" | "destructive") => void
 ): Partial<EditorProps> => ({
   attributes: {
-    class: 'prose prose-sm focus:outline-none max-w-none min-h-[200px] px-4 touch-manipulation',
+    class: 'prose prose-sm focus:outline-none max-w-none min-h-full touch-manipulation',
+    role: 'textbox',
+    'aria-label': 'Rich text editor',
+    'aria-multiline': 'true',
     spellcheck: 'true',
     autocomplete: 'on',
     autocorrect: 'on',
@@ -22,7 +18,7 @@ export const createEditorProps = (
     enterkeyhint: 'enter',
     inputmode: 'text',
   },
-  handlePaste: (view: EditorView, event: ClipboardEvent) => {
+  handlePaste: (_view, event: ClipboardEvent) => {
     if (!editor) return false;
 
     // Handle pasted images from clipboard
@@ -94,7 +90,7 @@ export const createEditorProps = (
       return false;
     }
   },
-  handleDrop: (view: EditorView, event: DragEvent, _slice: any, moved: boolean) => {
+  handleDrop: (_view, event: DragEvent, _slice, moved: boolean) => {
     if (!moved && event.dataTransfer?.files?.length) {
       event.preventDefault();
       handlePastedFiles(event.dataTransfer.files, editor, handleToast);

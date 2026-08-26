@@ -8,8 +8,8 @@ import { useNoteStore } from "@/lib/store";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
-import IconSelector from "./IconSelector";
-import { Droppable } from "react-beautiful-dnd";
+import IconSelector, { FolderIcon } from "./IconSelector";
+import { Droppable } from "@hello-pangea/dnd";
 import { FolderButton } from "./FolderButton";
 
 export default function Sidebar() {
@@ -24,6 +24,7 @@ export default function Sidebar() {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
+      setIsExpanded(!mobile);
     };
 
     window.addEventListener('resize', handleResize);
@@ -43,7 +44,7 @@ export default function Sidebar() {
   };
 
   // Calculate note counts
-  const allNotesCount = notes.filter(note => !note.folderId).length;
+  const allNotesCount = notes.length;
   const folderCounts = folders.reduce((acc, folder) => {
     acc[folder.id] = notes.filter(note => note.folderId === folder.id).length;
     return acc;
@@ -54,7 +55,7 @@ export default function Sidebar() {
       open={isExpanded}
       onOpenChange={setIsExpanded}
       className={cn(
-        "border-r h-screen transition-all duration-300 overflow-hidden flex-shrink-0",
+        "garden-sidebar border-r border-border bg-card/60 h-screen transition-all duration-300 overflow-hidden flex-shrink-0",
         isExpanded ? "w-64" : "w-12",
         isMobile && "w-12 min-w-[3rem]",
         isMobile && isExpanded && "w-64 min-w-[16rem]"
@@ -62,8 +63,13 @@ export default function Sidebar() {
     >
       <div className="flex flex-col h-full">
         <div className="flex items-center justify-between p-4">
-          {isExpanded && <h1 className="text-xl font-semibold text-primary">Notes</h1>}
-          <CollapsibleTrigger className="p-2 hover:bg-accent rounded-md">
+          {isExpanded && (
+            <div>
+              <h1 className="text-lg font-semibold tracking-tight">Cozy Garden</h1>
+              <p className="text-[11px] text-muted-foreground">Local notes</p>
+            </div>
+          )}
+          <CollapsibleTrigger className="p-2 hover:bg-accent rounded-md" aria-label={isExpanded ? "Collapse sidebar" : "Open sidebar"}>
             <ChevronRight className={cn(
               "w-5 h-5 transition-transform",
               isExpanded ? "rotate-90" : "rotate-0"
@@ -101,10 +107,10 @@ export default function Sidebar() {
                 </Droppable>
 
                 <div className="flex items-center justify-between mb-4 mt-4">
-                  <h2 className="text-sm font-medium text-gray-500">Folders</h2>
+                  <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Folders</h2>
                   <Dialog open={isCreateFolderOpen} onOpenChange={setIsCreateFolderOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" aria-label="Create folder" title="Create folder">
                         <FolderPlus className="w-4 h-4" />
                       </Button>
                     </DialogTrigger>
@@ -146,6 +152,7 @@ export default function Sidebar() {
                               isSelected={selectedFolderId === folder.id}
                               isExpanded={isExpanded}
                               onClick={() => setSelectedFolderId(folder.id)}
+                              icon={<FolderIcon iconId={folder.icon} />}
                             />
                           </div>
                           {provided.placeholder}

@@ -1,64 +1,84 @@
-import { useState, useEffect } from "react";
-import Sidebar from "@/components/Sidebar";
-import NotesList from "@/components/NotesList";
+import { useEffect, useMemo, useState } from "react";
+import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import NoteEditor from "@/components/NoteEditor";
-import { Note } from "@/lib/types";
-import { DragDropContext } from "react-beautiful-dnd";
-import { useNoteStore } from "@/lib/store";
+import MobileNoteEditor from "@/components/MobileNoteEditor";
+import NotesList from "@/components/NotesList";
+import Sidebar from "@/components/Sidebar";
 import { useToast } from "@/components/ui/use-toast";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNoteStore } from "@/lib/store";
+import type { Note } from "@/lib/types";
 
 export default function Index() {
-  const [selectedNote, setSelectedNote] = useState<Note | undefined>();
-  const { updateNote } = useNoteStore();
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const notes = useNoteStore((state) => state.notes);
+  const addNote = useNoteStore((state) => state.addNote);
+  const moveNoteToFolder = useNoteStore((state) => state.moveNoteToFolder);
+  const selectedFolderId = useNoteStore((state) => state.selectedFolderId);
+  const [selectedNoteId, setSelectedNoteId] = useState<string>();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const { toast } = useToast();
+
+  const selectedNote = useMemo(
+    () => notes.find((note) => note.id === selectedNoteId),
+    [notes, selectedNoteId],
+  );
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const resize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
   }, []);
 
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey)) return;
+      if (event.key.toLowerCase() === "n") {
+        event.preventDefault();
+        const note = addNote({ title: "", content: "", folderId: selectedFolderId ?? undefined, tags: [] });
+        setSelectedNoteId(note.id);
+      }
+      if (event.key.toLowerCase() === "f") {
+        event.preventDefault();
+        window.dispatchEvent(new CustomEvent("cozy:focus-search"));
+      }
+    };
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, [addNote, selectedFolderId]);
+
   const handleNoteSelect = (note: Note) => {
-    setSelectedNote(note);
-    if (isMobile) {
-      navigate(`/note/${note.id}`);
-    }
+    setSelectedNoteId(note.id);
   };
 
-  const handleDragEnd = (result: any) => {
+  const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-
-    const noteId = result.draggableId;
-    const destinationFolderId = result.destination.droppableId === "all-notes" ? undefined : result.destination.droppableId;
-    
-    updateNote(noteId, { folderId: destinationFolderId });
-    
+    if (result.destination.droppableId === "notes-list") return;
+    const folderId = result.destination.droppableId === "all-notes"
+      ? undefined
+      : result.destination.droppableId;
+    moveNoteToFolder(result.draggableId, folderId);
     toast({
       title: "Note moved",
-      description: destinationFolderId ? "Note moved to folder" : "Note moved to All Notes",
+      description: folderId ? "The note was moved to its new folder." : "The note now appears in All notes.",
     });
   };
 
-  const isEditingNote = location.pathname.startsWith('/note/');
+  if (isMobile && selectedNote) {
+    return <MobileNoteEditor note={selectedNote} onBack={() => setSelectedNoteId(undefined)} />;
+  }
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex h-screen bg-background text-foreground overflow-hidden">
+      <main className="garden-shell flex h-screen overflow-hidden bg-background text-foreground">
         <Sidebar />
-        <div className={`flex flex-1 transition-transform duration-300 ${isMobile && isEditingNote ? '-translate-x-full' : ''}`}>
-          <NotesList onNoteSelect={handleNoteSelect} selectedNote={selectedNote} />
-          {(!isMobile || !isEditingNote) && (
-            <NoteEditor note={selectedNote} />
-          )}
+        <div className="flex min-w-0 flex-1">
+          <NotesList
+            onNoteSelect={handleNoteSelect}
+            selectedNote={selectedNote}
+            onSelectedNoteDeleted={() => setSelectedNoteId(undefined)}
+          />
+          <NoteEditor note={selectedNote} />
         </div>
-      </div>
+      </main>
     </DragDropContext>
   );
 }

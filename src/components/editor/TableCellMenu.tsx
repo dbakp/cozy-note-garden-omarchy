@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Editor } from '@tiptap/react';
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import TableMenuButton from './table/TableMenuButton';
 import TableMenuItems from './table/TableMenuItems';
@@ -131,9 +132,9 @@ export default function TableCellMenu({ editor, isHeader }: TableCellMenuProps) 
     } else if (format === 'markdown') {
       content = table.textContent;
     } else if (format === 'csv') {
-      table.forEach((row: any) => {
+      table.forEach((row: ProseMirrorNode) => {
         const cells: string[] = [];
-        row.forEach((cell: any) => {
+        row.forEach((cell: ProseMirrorNode) => {
           cells.push(`"${cell.textContent}"`);
         });
         content += cells.join(',') + '\n';

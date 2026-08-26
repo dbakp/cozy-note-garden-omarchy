@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Cozy Note Garden
+GenericName=Notes
+Comment=Private, local-first notes that follow your Omarchy theme
+Exec=cozy-note-garden
+Icon=cozy-note-garden
+Terminal=false
+Categories=Office;
+Keywords=notes;writing;garden;omarchy;
+StartupNotify=true
+StartupWMClass=cozy-note-garden
