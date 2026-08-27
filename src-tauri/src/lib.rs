@@ -148,6 +148,16 @@ fn get_omarchy_theme() -> Result<Option<OmarchyTheme>, String> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // WebKitGTK's DMABUF renderer can produce a fully black webview on a
+    // subset of Wayland/Hyprland GPU combinations. Disable that path unless
+    // the user has explicitly selected a renderer setting, keeping the app
+    // visible and usable on Omarchy while retaining an escape hatch for
+    // advanced setups.
+    #[cfg(target_os = "linux")]
+    if std::env::var_os("WEBKIT_DISABLE_DMABUF_RENDERER").is_none() {
+        std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+    }
+
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             if let Some(window) = app.get_webview_window("main") {
