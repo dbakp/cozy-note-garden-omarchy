@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { FolderPlus, ChevronRight, Inbox } from "lucide-react";
+import { FolderPlus, ChevronRight, Inbox, Sparkles } from "lucide-react";
 import Tags from "./Tags";
 import Settings from "./Settings";
 import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
@@ -11,6 +11,7 @@ import { Input } from "./ui/input";
 import IconSelector, { FolderIcon } from "./IconSelector";
 import { Droppable } from "@hello-pangea/dnd";
 import { FolderButton } from "./FolderButton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 export default function Sidebar() {
   const { folders, notes, selectedFolderId, setSelectedFolderId, addFolder } = useNoteStore();
@@ -61,14 +62,16 @@ export default function Sidebar() {
         isMobile && isExpanded && "w-64 min-w-[16rem]"
       )}
     >
-      <div className="flex flex-col h-full">
-        <div className="flex items-center justify-between p-4">
+      <TooltipProvider delayDuration={320}>
+      <div className="flex h-full flex-col">
+        <div className={cn("flex items-center border-b border-border/60", isExpanded ? "justify-between p-4" : "justify-center p-2")}>
           {isExpanded && (
             <div>
               <h1 className="text-lg font-semibold tracking-tight">Cozy Garden</h1>
               <p className="text-[11px] text-muted-foreground">Local notes</p>
             </div>
           )}
+          {!isExpanded && <Sparkles className="h-5 w-5 text-primary" aria-hidden="true" />}
           <CollapsibleTrigger className="p-2 hover:bg-accent rounded-md" aria-label={isExpanded ? "Collapse sidebar" : "Open sidebar"}>
             <ChevronRight className={cn(
               "w-5 h-5 transition-transform",
@@ -77,10 +80,9 @@ export default function Sidebar() {
           </CollapsibleTrigger>
         </div>
 
-        {isExpanded && (
-          <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-hidden">
-              <div className="p-4">
+        <div className="flex min-h-0 flex-1 flex-col">
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <div className={cn("space-y-1", isExpanded ? "p-4" : "p-2")}>
                 <Droppable droppableId="all-notes">
                   {(provided, snapshot) => (
                     <div 
@@ -92,28 +94,39 @@ export default function Sidebar() {
                         "rounded-lg transition-colors",
                         snapshot.isDraggingOver && "bg-primary/5"
                       )}>
-                        <FolderButton
-                          name="All Notes"
-                          count={allNotesCount}
-                          isSelected={selectedFolderId === null}
-                          isExpanded={isExpanded}
-                          onClick={() => setSelectedFolderId(null)}
-                          icon={<Inbox className="w-4 h-4" />}
-                        />
+                        {isExpanded ? (
+                          <FolderButton name="All Notes" count={allNotesCount} isSelected={selectedFolderId === null} isExpanded onClick={() => setSelectedFolderId(null)} icon={<Inbox className="w-4 h-4" />} />
+                        ) : (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <FolderButton name="All Notes" count={allNotesCount} isSelected={selectedFolderId === null} isExpanded={false} onClick={() => setSelectedFolderId(null)} icon={<Inbox className="w-4 h-4" />} />
+                            </TooltipTrigger>
+                            <TooltipContent side="right">All Notes · {allNotesCount}</TooltipContent>
+                          </Tooltip>
+                        )}
                       </div>
                       {provided.placeholder}
                     </div>
                   )}
                 </Droppable>
 
-                <div className="flex items-center justify-between mb-4 mt-4">
-                  <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Folders</h2>
+                <div className={cn("flex items-center", isExpanded ? "mb-4 mt-4 justify-between" : "mb-2 mt-3 justify-center")}>
+                  <h2 className={cn("text-xs font-medium uppercase tracking-wider text-muted-foreground", !isExpanded && "sr-only")}>Folders</h2>
                   <Dialog open={isCreateFolderOpen} onOpenChange={setIsCreateFolderOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="icon" aria-label="Create folder" title="Create folder">
-                        <FolderPlus className="w-4 h-4" />
-                      </Button>
-                    </DialogTrigger>
+                    {isExpanded ? (
+                      <DialogTrigger asChild>
+                        <Button type="button" variant="ghost" size="icon" aria-label="Create folder" title="Create folder"><FolderPlus className="w-4 h-4" /></Button>
+                      </DialogTrigger>
+                    ) : (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <DialogTrigger asChild>
+                              <Button type="button" variant="ghost" size="icon" aria-label="Create folder"><FolderPlus className="w-4 h-4" /></Button>
+                            </DialogTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent side="right">Create folder</TooltipContent>
+                        </Tooltip>
+                    )}
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>Create New Folder</DialogTitle>
@@ -146,14 +159,16 @@ export default function Sidebar() {
                             "rounded-lg transition-colors",
                             snapshot.isDraggingOver && "bg-primary/5"
                           )}>
-                            <FolderButton
-                              name={folder.name}
-                              count={folderCounts[folder.id]}
-                              isSelected={selectedFolderId === folder.id}
-                              isExpanded={isExpanded}
-                              onClick={() => setSelectedFolderId(folder.id)}
-                              icon={<FolderIcon iconId={folder.icon} />}
-                            />
+                            {isExpanded ? (
+                              <FolderButton name={folder.name} count={folderCounts[folder.id]} isSelected={selectedFolderId === folder.id} isExpanded onClick={() => setSelectedFolderId(folder.id)} icon={<FolderIcon iconId={folder.icon} />} />
+                            ) : (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <FolderButton name={folder.name} count={folderCounts[folder.id]} isSelected={selectedFolderId === folder.id} isExpanded={false} onClick={() => setSelectedFolderId(folder.id)} icon={<FolderIcon iconId={folder.icon} />} />
+                                </TooltipTrigger>
+                                <TooltipContent side="right">{folder.name} · {folderCounts[folder.id]}</TooltipContent>
+                              </Tooltip>
+                            )}
                           </div>
                           {provided.placeholder}
                         </div>
@@ -163,16 +178,16 @@ export default function Sidebar() {
                 </nav>
 
                 <div className="mt-6">
-                  <Tags />
+                  <Tags isExpanded={isExpanded} />
                 </div>
               </div>
             </div>
-            <div className="mt-auto p-4 border-t">
-              <Settings />
+            <div className={cn("mt-auto border-t", isExpanded ? "p-4" : "flex justify-center p-2")}>
+              <Settings isExpanded={isExpanded} />
             </div>
-          </div>
-        )}
+        </div>
       </div>
+      </TooltipProvider>
     </Collapsible>
   );
 }

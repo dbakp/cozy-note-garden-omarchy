@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { useToast } from "./ui/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 const themeOptions: { value: ThemeChoice; label: string; description: string }[] = [
   { value: "system", label: "Omarchy", description: "Follow the active desktop theme" },
@@ -29,7 +30,7 @@ const fontOptions: { value: FontChoice; label: string }[] = [
   { value: "mono", label: "Mono" },
 ];
 
-export default function Settings() {
+export default function Settings({ isExpanded = true }: { isExpanded?: boolean }) {
   const { theme, setTheme, font, setFont, systemThemeName } = useTheme();
   const replaceAll = useNoteStore((state) => state.replaceAll);
   const { toast } = useToast();
@@ -77,12 +78,27 @@ export default function Settings() {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="w-full justify-start">
-          <SettingsIcon className="mr-2 h-4 w-4" />
-          Settings
-        </Button>
-      </DialogTrigger>
+      {isExpanded ? (
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="sm" className="w-full justify-start" aria-label="Open settings">
+            <SettingsIcon className="mr-2 h-4 w-4" />
+            Settings
+          </Button>
+        </DialogTrigger>
+      ) : (
+        <TooltipProvider delayDuration={300}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-10 w-10" aria-label="Open settings">
+                  <SettingsIcon className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="right">Settings</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>

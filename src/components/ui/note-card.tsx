@@ -21,6 +21,9 @@ interface NoteCardProps {
   isSelected: boolean;
   onClick: () => void;
   onDeleted?: () => void;
+  onKeyDown?: React.KeyboardEventHandler<HTMLElement>;
+  tabIndex?: number;
+  innerRef?: (element: HTMLElement | null) => void;
 }
 
 const contentPreview = (content: string) => {
@@ -30,7 +33,7 @@ const contentPreview = (content: string) => {
   return (node.textContent ?? "").trim().slice(0, 110) || "No content yet";
 };
 
-export default function NoteCard({ note, isSelected, onClick, onDeleted }: NoteCardProps) {
+export default function NoteCard({ note, isSelected, onClick, onDeleted, onKeyDown, tabIndex = 0, innerRef }: NoteCardProps) {
   const { folders, moveNoteToFolder, deleteNote } = useNoteStore();
   const folder = folders.find((item) => item.id === note.folderId);
   const availableFolders = folders.filter((item) => item.id !== note.folderId);
@@ -42,7 +45,13 @@ export default function NoteCard({ note, isSelected, onClick, onDeleted }: NoteC
 
   return (
     <article
+      ref={innerRef}
       onClick={onClick}
+      onKeyDown={onKeyDown}
+      tabIndex={tabIndex}
+      role="button"
+      aria-current={isSelected ? "true" : undefined}
+      aria-label={`${note.title || "Untitled"}${folder ? `, in ${folder.name}` : ""}`}
       className={`note-card group relative cursor-pointer border-b border-border px-4 py-3.5 outline-none ${
         isSelected ? "bg-primary/10" : "hover:bg-accent/70"
       }`}

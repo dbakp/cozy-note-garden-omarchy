@@ -1,6 +1,6 @@
 import { useNoteStore } from "@/lib/store";
 import { Badge } from "./ui/badge";
-import { X, Pencil, Trash2 } from "lucide-react";
+import { Hash, X, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { useToast } from "./ui/use-toast";
@@ -15,8 +15,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
-export default function Tags() {
+export default function Tags({ isExpanded = true }: { isExpanded?: boolean }) {
   const { tags, selectedTag, setSelectedTag, updateTag, deleteTag } = useNoteStore();
   const [editingTag, setEditingTag] = useState<string | null>(null);
   const [editedTagValue, setEditedTagValue] = useState("");
@@ -58,9 +59,9 @@ export default function Tags() {
   };
 
   return (
-    <div className="px-4 py-2 space-y-2">
-      <h2 className="text-sm font-medium text-gray-500">Tags</h2>
-      <div className="flex flex-col space-y-2">
+    <div className={isExpanded ? "space-y-2" : "space-y-2 px-0.5"}>
+      <h2 className={isExpanded ? "text-sm font-medium text-muted-foreground" : "sr-only"}>Tags</h2>
+      <div className="flex flex-col items-center gap-1.5">
         {tags.map((tag) => (
           <div key={tag} className="group relative flex items-center">
             {editingTag === tag ? (
@@ -72,7 +73,7 @@ export default function Tags() {
                 className="h-6 px-2 py-0 text-sm"
                 autoFocus
               />
-            ) : (
+            ) : isExpanded ? (
               <div className="flex items-center justify-between w-full group">
                 <Badge
                   variant={selectedTag === tag ? "default" : "secondary"}
@@ -127,6 +128,22 @@ export default function Tags() {
                   </div>
                 </Badge>
               </div>
+            ) : (
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                      aria-label={`${selectedTag === tag ? "Clear" : "Filter by"} tag ${tag}`}
+                      className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${selectedTag === tag ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"}`}
+                    >
+                      <Hash className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">{tag}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
         ))}

@@ -22,6 +22,7 @@ export default function NotesList({ onNoteSelect, selectedNote, onSelectedNoteDe
   const { notes, folders, addNote, selectedTag, selectedFolderId } = useNoteStore();
   const [query, setQuery] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
+  const noteRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
     const focus = () => searchRef.current?.focus();
@@ -54,6 +55,35 @@ export default function NotesList({ onNoteSelect, selectedNote, onSelectedNoteDe
       tags: [],
     });
     onNoteSelect(note);
+  };
+
+  const focusNoteAt = (index: number) => {
+    const target = filteredNotes[index];
+    if (!target) return;
+    onNoteSelect(target);
+    requestAnimationFrame(() => noteRefs.current[target.id]?.focus());
+  };
+
+  const handleNoteKeyDown = (event: React.KeyboardEvent<HTMLElement>, note: Note, index: number) => {
+    if (event.target !== event.currentTarget) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onNoteSelect(note);
+      return;
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      focusNoteAt(Math.min(index + 1, filteredNotes.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      focusNoteAt(Math.max(index - 1, 0));
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      focusNoteAt(0);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      focusNoteAt(filteredNotes.length - 1);
+    }
   };
 
   return (
@@ -99,7 +129,7 @@ export default function NotesList({ onNoteSelect, selectedNote, onSelectedNoteDe
                 {!query && <Button variant="outline" size="sm" className="mt-4" onClick={createNote}>Create a note</Button>}
               </div>
             ) : (
-              filteredNotes.map((note, index) => (
+                filteredNotes.map((note, index) => (
                 <Draggable key={note.id} draggableId={note.id} index={index}>
                   {(dragProvided, snapshot) => (
                     <div ref={dragProvided.innerRef} {...dragProvided.draggableProps} {...dragProvided.dragHandleProps} className={snapshot.isDragging ? "shadow-xl" : undefined} style={{ ...dragProvided.draggableProps.style, "--note-index": Math.min(index, 8) } as React.CSSProperties}>
@@ -107,6 +137,9 @@ export default function NotesList({ onNoteSelect, selectedNote, onSelectedNoteDe
                         note={note}
                         isSelected={selectedNote?.id === note.id}
                         onClick={() => onNoteSelect(note)}
+                        onKeyDown={(event) => handleNoteKeyDown(event, note, index)}
+                        tabIndex={selectedNote ? (selectedNote.id === note.id ? 0 : -1) : index === 0 ? 0 : -1}
+                        innerRef={(element) => { noteRefs.current[note.id] = element; }}
                         onDeleted={selectedNote?.id === note.id ? onSelectedNoteDeleted : undefined}
                       />
                     </div>

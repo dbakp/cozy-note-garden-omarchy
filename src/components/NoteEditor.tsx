@@ -83,6 +83,17 @@ export default function NoteEditor({ note, mobile = false }: NoteEditorProps) {
     }
   };
 
+  const handleTitleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      editor?.commands.focus("start");
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      titleInputRef.current?.blur();
+      editor?.commands.focus("start");
+    }
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -115,7 +126,9 @@ export default function NoteEditor({ note, mobile = false }: NoteEditorProps) {
           type="text"
           value={title}
           onChange={handleTitleChange}
+          onKeyDown={handleTitleKeyDown}
           placeholder="Note title"
+          aria-label="Note title"
           className="min-w-0 flex-1 bg-transparent text-xl font-semibold focus:outline-none"
         />
         <span className="flex-none text-[11px] text-muted-foreground">Saved locally</span>
