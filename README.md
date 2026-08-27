@@ -28,6 +28,14 @@ chmod +x Cozy-Note-Garden-*.AppImage
 ./Cozy-Note-Garden-*.AppImage
 ```
 
+To install it persistently and add it to the Omarchy launcher, run the installer from a clone of this repository:
+
+```bash
+./scripts/install-appimage-omarchy.sh ~/Downloads/Cozy-Note-Garden-1.0.0-x86_64.AppImage
+```
+
+This copies the AppImage to `~/.local/bin/cozy-note-garden`, registers the desktop entry and icon under `~/.local/share`, and refreshes the Omarchy menu. Remove it later with `./scripts/uninstall-omarchy.sh`.
+
 ### Build and install on Omarchy
 
 ```bash
