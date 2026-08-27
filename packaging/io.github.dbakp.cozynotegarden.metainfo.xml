@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>io.github.dbakp.cozynotegarden</id>
-  <name>Cozy Note Garden</name>
+  <name>Note Garden</name>
   <summary>Private, local-first notes that follow your Omarchy theme</summary>
   <developer id="github.com/dbakp">
     <name>David Bak Posada</name>
@@ -10,7 +10,7 @@
   <project_license>MIT</project_license>
   <description>
     <p>
-      Cozy Note Garden is a calm native notes app for Omarchy with rich-text
+      Note Garden is a calm native notes app for Omarchy with rich-text
       editing, folders, tags, search, backups, and live theme synchronization.
       Notes stay on your machine in the standard Linux data directory.
     </p>

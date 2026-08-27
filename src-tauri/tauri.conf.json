@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Cozy Note Garden",
+  "productName": "Note Garden",
   "version": "1.0.0",
   "identifier": "io.github.dbakp.cozynotegarden",
   "build": {
@@ -16,11 +16,11 @@
     "windows": [
       {
         "label": "main",
-        "title": "Cozy Note Garden",
+        "title": "Note Garden",
         "width": 1280,
         "height": 800,
-        "minWidth": 840,
-        "minHeight": 560,
+        "minWidth": 720,
+        "minHeight": 480,
         "center": true,
         "resizable": true,
         "fullscreen": false,

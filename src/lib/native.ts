@@ -54,7 +54,7 @@ export async function chooseBackupPath(): Promise<string | null> {
   if (!isTauri()) return null;
   const { save } = await import("@tauri-apps/plugin-dialog");
   return save({
-    title: "Export Cozy Note Garden backup",
+    title: "Export Note Garden backup",
     defaultPath: `cozy-note-garden-${new Date().toISOString().slice(0, 10)}.json`,
     filters: [{ name: "JSON backup", extensions: ["json"] }],
   });
@@ -64,7 +64,7 @@ export async function chooseImportPath(): Promise<string | null> {
   if (!isTauri()) return null;
   const { open } = await import("@tauri-apps/plugin-dialog");
   const selected = await open({
-    title: "Import Cozy Note Garden backup",
+    title: "Import Note Garden backup",
     multiple: false,
     filters: [{ name: "JSON backup", extensions: ["json"] }],
   });

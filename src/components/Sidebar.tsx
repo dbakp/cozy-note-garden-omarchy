@@ -69,7 +69,7 @@ export default function Sidebar() {
         <div className={cn("flex items-center border-b border-border/60", isExpanded ? "justify-between p-4" : "justify-center p-2")}>
           {isExpanded && (
             <div>
-              <h1 className="text-lg font-semibold tracking-tight">Cozy Garden</h1>
+              <h1 className="text-lg font-semibold tracking-tight">Note Garden</h1>
               <p className="text-[11px] text-muted-foreground">Local notes</p>
             </div>
           )}
