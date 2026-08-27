@@ -68,9 +68,9 @@ export default function Index() {
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <main className="garden-shell flex h-screen overflow-hidden bg-background text-foreground">
+      <main className="garden-shell overflow-hidden bg-background text-foreground">
         <Sidebar />
-        <div className="flex min-w-0 flex-1">
+        <div className="workspace-panels min-w-0">
           <NotesList
             onNoteSelect={handleNoteSelect}
             selectedNote={selectedNote}

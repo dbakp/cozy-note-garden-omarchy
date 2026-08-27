@@ -87,7 +87,7 @@ export default function NotesList({ onNoteSelect, selectedNote, onSelectedNoteDe
   };
 
   return (
-    <section className="note-list-panel flex h-screen w-[calc(100vw-3rem)] min-w-0 flex-shrink-0 flex-col border-r border-border bg-card/25 md:w-80 md:min-w-[20rem]">
+    <section className="note-list-panel flex min-w-0 flex-shrink-0 flex-col border-r border-border bg-card/25">
       <header className="border-b border-border px-4 pb-4 pt-5">
         <div className="mb-3 flex items-center justify-between">
           <div>

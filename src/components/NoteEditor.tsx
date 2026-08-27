@@ -112,7 +112,7 @@ export default function NoteEditor({ note, mobile = false }: NoteEditorProps) {
   }
 
   return (
-    <div className={`editor-pane relative min-w-0 flex-1 flex-col ${mobile ? "flex h-full" : "hidden h-screen md:flex"}`} ref={editorRef}>
+    <div className={`editor-pane relative min-w-0 flex-1 flex-col ${mobile ? "flex h-full" : "hidden md:flex"}`} ref={editorRef}>
       <input
         type="file"
         ref={fileInputRef}

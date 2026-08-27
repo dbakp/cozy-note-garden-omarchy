@@ -25,7 +25,9 @@ export default function Sidebar() {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      setIsExpanded(!mobile);
+      // Only change the default when crossing into the compact layout. Once
+      // the user has chosen a state, resizing should not fight that choice.
+      if (mobile) setIsExpanded(false);
     };
 
     window.addEventListener('resize', handleResize);
@@ -56,11 +58,11 @@ export default function Sidebar() {
       open={isExpanded}
       onOpenChange={setIsExpanded}
       className={cn(
-        "garden-sidebar border-r border-border bg-card/60 h-screen transition-all duration-300 overflow-hidden flex-shrink-0",
-        isExpanded ? "w-64" : "w-12",
-        isMobile && "w-12 min-w-[3rem]",
-        isMobile && isExpanded && "w-64 min-w-[16rem]"
+        "garden-sidebar border-r border-border bg-card/60 transition-[width,transform,box-shadow] duration-300 overflow-hidden flex-shrink-0",
+        isExpanded ? "sidebar-expanded" : "sidebar-collapsed",
+        isMobile && "sidebar-mobile"
       )}
+      data-expanded={isExpanded}
     >
       <TooltipProvider delayDuration={320}>
       <div className="flex h-full flex-col">
