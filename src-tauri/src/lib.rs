@@ -186,19 +186,21 @@ fn get_omarchy_theme() -> Result<Option<OmarchyTheme>, String> {
 
 #[cfg(target_os = "linux")]
 fn focus_browser_window() -> bool {
-    let browsers = [
+    let browser_markers = [
         "firefox",
         "librewolf",
         "chromium",
-        "google-chrome",
-        "google-chrome-stable",
-        "brave-browser",
-        "microsoft-edge",
+        "chrome",
+        "brave",
+        "edge",
         "vivaldi",
         "opera",
     ];
 
-    for _ in 0..8 {
+    // The opener may launch a new browser process, or may hand the URL to an
+    // existing process. Allow either case time to settle before querying the
+    // compositor.
+    for _ in 0..20 {
         let clients = Command::new("hyprctl")
             .args(["clients", "-j"])
             .output()
@@ -218,14 +220,31 @@ fn focus_browser_window() -> bool {
                 .unwrap_or(u64::MAX)
         });
 
-        if let Some(address) = clients.iter().find_map(|client| {
-            let class = client.get("class").and_then(JsonValue::as_str)?;
-            let class = class.to_ascii_lowercase();
-            let is_browser = browsers.iter().any(|browser| class == *browser);
-            is_browser
-                .then(|| client.get("address").and_then(JsonValue::as_str))
-                .flatten()
+        if let Some(client) = clients.iter().find(|client| {
+            ["class", "initialClass", "title", "initialTitle"]
+                .iter()
+                .filter_map(|field| client.get(*field).and_then(JsonValue::as_str))
+                .map(str::to_ascii_lowercase)
+                .any(|value| browser_markers.iter().any(|marker| value.contains(marker)))
         }) {
+            let Some(address) = client.get("address").and_then(JsonValue::as_str) else {
+                continue;
+            };
+
+            // Focusing an address normally follows its workspace, but an
+            // explicit workspace dispatch makes that cross-workspace behavior
+            // deterministic on Hyprland versions/configurations where it does
+            // not.
+            if let Some(workspace) = client
+                .get("workspace")
+                .and_then(|workspace| workspace.get("id"))
+                .and_then(JsonValue::as_i64)
+            {
+                let _ = Command::new("hyprctl")
+                    .args(["dispatch", "workspace", &workspace.to_string()])
+                    .status();
+            }
+
             return Command::new("hyprctl")
                 .args(["dispatch", "focuswindow", &format!("address:{address}")])
                 .status()
@@ -233,7 +252,7 @@ fn focus_browser_window() -> bool {
                 .unwrap_or(false);
         }
 
-        std::thread::sleep(std::time::Duration::from_millis(150));
+        std::thread::sleep(std::time::Duration::from_millis(200));
     }
 
     false
