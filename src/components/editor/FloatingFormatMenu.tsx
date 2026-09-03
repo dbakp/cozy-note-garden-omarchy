@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { getFloatingMenuPosition } from './FloatingMenuConfig';
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 
 interface FloatingFormatMenuProps {
   editor: Editor | null;
@@ -22,25 +22,52 @@ interface FloatingFormatMenuProps {
 
 export default function FloatingFormatMenu({ editor, isVisible, setLink }: FloatingFormatMenuProps) {
   const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [isPositioned, setIsPositioned] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (editor && isVisible) {
+  useLayoutEffect(() => {
+    if (!editor || !isVisible || !menuRef.current) return;
+
+    const updatePosition = () => {
       const coords = getFloatingMenuPosition(editor);
-      setPosition({
-        top: coords.top - 50, // Offset to show above selection
-        left: (coords.left + coords.right) / 2 - 150, // Center horizontally
-      });
-    }
+      const menu = menuRef.current;
+      if (!menu) return;
+
+      const padding = 8;
+      const menuRect = menu.getBoundingClientRect();
+      const selectionCenter = (coords.left + coords.right) / 2;
+      const left = Math.min(
+        Math.max(padding, selectionCenter - menuRect.width / 2),
+        Math.max(padding, window.innerWidth - menuRect.width - padding),
+      );
+      const top = coords.top - menuRect.height - 8 >= padding
+        ? coords.top - menuRect.height - 8
+        : Math.min(coords.bottom + 8, window.innerHeight - menuRect.height - padding);
+
+      setPosition({ top: Math.max(padding, top), left });
+      setIsPositioned(true);
+    };
+
+    const frame = requestAnimationFrame(updatePosition);
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
   }, [editor, isVisible]);
 
   if (!editor || !isVisible) return null;
 
   return (
     <div 
-      className="fixed z-50 bg-white rounded-lg shadow-lg border p-1 flex gap-1 transition-opacity"
+      ref={menuRef}
+      className="fixed z-50 flex max-w-[calc(100vw-1rem)] flex-wrap justify-center gap-1 rounded-lg border bg-popover p-1 shadow-lg transition-opacity"
       style={{
         top: `${position.top}px`,
         left: `${position.left}px`,
+        opacity: isPositioned ? 1 : 0,
       }}
     >
       <Button
