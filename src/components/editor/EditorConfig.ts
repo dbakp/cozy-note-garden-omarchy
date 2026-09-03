@@ -1,6 +1,7 @@
 import { Editor } from '@tiptap/react';
 import type { EditorProps } from '@tiptap/pm/view';
 import { handleFileUpload, handlePastedFiles } from './ImageHandler';
+import { openExternalUrl } from '@/lib/native';
 
 export const createEditorProps = (
   editor: Editor | null, 
@@ -43,6 +44,15 @@ export const createEditorProps = (
       return true;
     }
     return false;
+  },
+  handleClick: (_view, _pos, event) => {
+    if (!(event.ctrlKey || event.metaKey)) return false;
+    const anchor = (event.target as HTMLElement | null)?.closest('a');
+    if (!anchor?.href) return false;
+
+    event.preventDefault();
+    void openExternalUrl(anchor.href);
+    return true;
   },
   handleDOMEvents: {
     keydown: (view, event) => {
