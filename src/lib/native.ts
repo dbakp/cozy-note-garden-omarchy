@@ -94,6 +94,10 @@ export async function openExternalUrl(url: string): Promise<void> {
   if (isTauri()) {
     const { openUrl } = await import("@tauri-apps/plugin-opener");
     await openUrl(url);
+    // xdg-open can reuse an existing browser window without activating it.
+    // Ask Hyprland to focus the browser after the URL has been handed off so
+    // links opened from another workspace become visible immediately.
+    await invokeNative("focus_browser");
     return;
   }
 

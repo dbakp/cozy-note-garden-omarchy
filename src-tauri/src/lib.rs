@@ -184,6 +184,71 @@ fn get_omarchy_theme() -> Result<Option<OmarchyTheme>, String> {
     }))
 }
 
+#[cfg(target_os = "linux")]
+fn focus_browser_window() -> bool {
+    let browsers = [
+        "firefox",
+        "librewolf",
+        "chromium",
+        "google-chrome",
+        "google-chrome-stable",
+        "brave-browser",
+        "microsoft-edge",
+        "vivaldi",
+        "opera",
+    ];
+
+    for _ in 0..8 {
+        let clients = Command::new("hyprctl")
+            .args(["clients", "-j"])
+            .output()
+            .ok()
+            .filter(|output| output.status.success())
+            .and_then(|output| serde_json::from_slice::<Vec<JsonValue>>(&output.stdout).ok());
+
+        let Some(mut clients) = clients else {
+            std::thread::sleep(std::time::Duration::from_millis(150));
+            continue;
+        };
+
+        clients.sort_by_key(|client| {
+            client
+                .get("focusHistoryID")
+                .and_then(JsonValue::as_u64)
+                .unwrap_or(u64::MAX)
+        });
+
+        if let Some(address) = clients.iter().find_map(|client| {
+            let class = client.get("class").and_then(JsonValue::as_str)?;
+            let class = class.to_ascii_lowercase();
+            let is_browser = browsers.iter().any(|browser| class == *browser);
+            is_browser
+                .then(|| client.get("address").and_then(JsonValue::as_str))
+                .flatten()
+        }) {
+            return Command::new("hyprctl")
+                .args(["dispatch", "focuswindow", &format!("address:{address}")])
+                .status()
+                .map(|status| status.success())
+                .unwrap_or(false);
+        }
+
+        std::thread::sleep(std::time::Duration::from_millis(150));
+    }
+
+    false
+}
+
+#[cfg(not(target_os = "linux"))]
+fn focus_browser_window() -> bool {
+    false
+}
+
+#[tauri::command]
+fn focus_browser() -> bool {
+    focus_browser_window()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // WebKitGTK's DMABUF renderer can produce a fully black webview on a
@@ -220,6 +285,7 @@ pub fn run() {
             write_backup,
             read_backup,
             get_omarchy_theme,
+            focus_browser,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Panels");
