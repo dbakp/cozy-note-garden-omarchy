@@ -14,6 +14,7 @@ import {
 import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { getFloatingMenuPosition } from './FloatingMenuConfig';
+import { createPortal } from 'react-dom';
 import { useLayoutEffect, useRef, useState } from 'react';
 
 interface FloatingFormatMenuProps {
@@ -52,7 +53,7 @@ export default function FloatingFormatMenu({ editor, isVisible, setLink }: Float
     };
 
     const frame = requestAnimationFrame(updatePosition);
-    const editorPane = menuRef.current.closest('.editor-pane');
+    const editorPane = editor.view.dom.closest('.editor-pane');
     const resizeObserver = editorPane ? new ResizeObserver(([entry]) => {
       setIsCompact(entry.contentRect.width < 560);
     }) : null;
@@ -82,7 +83,8 @@ export default function FloatingFormatMenu({ editor, isVisible, setLink }: Float
     </Button>
   );
 
-  return (
+  return createPortal(
+    (
     <div 
       ref={menuRef}
       className="fixed z-50 flex max-w-[calc(100vw-1rem)] flex-wrap justify-center gap-1 rounded-lg border bg-popover p-1 shadow-lg transition-opacity"
@@ -119,5 +121,7 @@ export default function FloatingFormatMenu({ editor, isVisible, setLink }: Float
         </>
       )}
     </div>
+    ),
+    document.body,
   );
 }
