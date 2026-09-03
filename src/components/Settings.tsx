@@ -48,7 +48,7 @@ export default function Settings({ isExpanded = true }: { isExpanded?: boolean }
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement("a");
         anchor.href = url;
-        anchor.download = `cozy-note-garden-${new Date().toISOString().slice(0, 10)}.json`;
+        anchor.download = `panels-${new Date().toISOString().slice(0, 10)}.json`;
         anchor.click();
         URL.revokeObjectURL(url);
       }

@@ -1,4 +1,3 @@
 fn main() {
-    cozy_note_garden_lib::run();
+    panels_lib::run();
 }
-

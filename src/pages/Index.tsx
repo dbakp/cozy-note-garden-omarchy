@@ -38,7 +38,7 @@ export default function Index() {
       }
       if (event.key.toLowerCase() === "f") {
         event.preventDefault();
-        window.dispatchEvent(new CustomEvent("cozy:focus-search"));
+        window.dispatchEvent(new CustomEvent("panels:focus-search"));
       }
     };
     window.addEventListener("keydown", handleShortcut);

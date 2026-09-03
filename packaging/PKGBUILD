@@ -1,39 +1,40 @@
-pkgname=cozy-note-garden-git
+pkgname=panels-git
 pkgver=1.0.0.r0.g0000000
 pkgrel=1
 pkgdesc='Private, local-first notes that follow the active Omarchy theme'
 arch=('x86_64' 'aarch64')
-url='https://github.com/dbakp/cozy-note-garden-omarchy'
+url='https://github.com/dbakp/panels'
 license=('MIT')
 depends=('webkit2gtk-4.1' 'openssl' 'gcc-libs' 'glibc')
 makedepends=('cargo' 'git' 'npm' 'librsvg')
-provides=('cozy-note-garden')
-conflicts=('cozy-note-garden')
-source=("cozy-note-garden::git+${url}.git")
+provides=('panels' 'cozy-note-garden')
+conflicts=('panels' 'cozy-note-garden')
+replaces=('cozy-note-garden')
+source=("panels::git+${url}.git")
 sha256sums=('SKIP')
 
 pkgver() {
-  cd cozy-note-garden
+  cd panels
   printf '1.0.0.r%s.g%s' "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
 
 prepare() {
-  cd cozy-note-garden
+  cd panels
   npm ci --ignore-scripts
 }
 
 build() {
-  cd cozy-note-garden
+  cd panels
   npm run build
   CARGO_TARGET_DIR=target cargo build --manifest-path src-tauri/Cargo.toml --release --locked
 }
 
 package() {
-  cd cozy-note-garden
-  install -Dm755 target/release/cozy-note-garden "$pkgdir/usr/bin/cozy-note-garden"
-  install -Dm644 packaging/cozy-note-garden.desktop "$pkgdir/usr/share/applications/io.github.dbakp.cozynotegarden.desktop"
-  install -Dm644 packaging/io.github.dbakp.cozynotegarden.metainfo.xml "$pkgdir/usr/share/metainfo/io.github.dbakp.cozynotegarden.metainfo.xml"
-  install -Dm644 src-tauri/icons/icon.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/cozy-note-garden.svg"
-  install -Dm644 src-tauri/icons/128x128.png "$pkgdir/usr/share/icons/hicolor/128x128/apps/cozy-note-garden.png"
-  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/cozy-note-garden/LICENSE"
+  cd panels
+  install -Dm755 target/release/panels "$pkgdir/usr/bin/panels"
+  install -Dm644 packaging/panels.desktop "$pkgdir/usr/share/applications/io.github.dbakp.panels.desktop"
+  install -Dm644 packaging/io.github.dbakp.panels.metainfo.xml "$pkgdir/usr/share/metainfo/io.github.dbakp.panels.metainfo.xml"
+  install -Dm644 src-tauri/icons/icon.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/panels.svg"
+  install -Dm644 src-tauri/icons/128x128.png "$pkgdir/usr/share/icons/hicolor/128x128/apps/panels.png"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/panels/LICENSE"
 }

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Note Garden",
-  "version": "1.0.0",
-  "identifier": "io.github.dbakp.cozynotegarden",
+  "productName": "Panels",
+  "version": "1.1.0",
+  "identifier": "io.github.dbakp.panels",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:8080",
@@ -16,7 +16,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Note Garden",
+        "title": "Panels",
         "width": 1280,
         "height": 800,
         "minWidth": 720,
@@ -34,7 +34,7 @@
     "targets": ["appimage"],
     "category": "Productivity",
     "shortDescription": "Private, local-first notes for Omarchy",
-    "longDescription": "A calm, local-first notes garden with rich text editing, folders, tags, search, and live Omarchy theme integration.",
+    "longDescription": "A calm, local-first notes workspace with rich text editing, folders, tags, search, and live Omarchy theme integration.",
     "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.png"]
   }
 }

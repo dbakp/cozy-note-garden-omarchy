@@ -1,1 +1,1 @@
-{"default":{"identifier":"default","description":"Permissions required by the Cozy Note Garden desktop window","local":true,"windows":["main"],"permissions":["core:default","dialog:default","opener:default","opener:allow-reveal-item-in-dir","window-state:default"]}}
+{"default":{"identifier":"default","description":"Permissions required by the Panels desktop window","local":true,"windows":["main"],"permissions":["core:default","dialog:default","opener:default","opener:allow-reveal-item-in-dir","window-state:default"]}}

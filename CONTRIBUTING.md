@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping Cozy Note Garden grow.
+Thanks for helping Panels grow.
 
 ## Development setup
 

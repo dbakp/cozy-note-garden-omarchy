@@ -14,8 +14,10 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const themeStorageKey = "cozy-note-garden.theme";
-const fontStorageKey = "cozy-note-garden.font";
+const themeStorageKey = "panels.theme";
+const fontStorageKey = "panels.font";
+const legacyThemeStorageKey = "cozy-note-garden.theme";
+const legacyFontStorageKey = "cozy-note-garden.font";
 
 const hexToHsl = (hex: string) => {
   const value = hex.replace("#", "");
@@ -81,10 +83,14 @@ const applyOmarchyPalette = (palette: OmarchyTheme) => {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<ThemeChoice>(() =>
-    (localStorage.getItem(themeStorageKey) as ThemeChoice | null) ?? "system",
+    (localStorage.getItem(themeStorageKey) as ThemeChoice | null)
+      ?? (localStorage.getItem(legacyThemeStorageKey) as ThemeChoice | null)
+      ?? "system",
   );
   const [font, setFont] = useState<FontChoice>(() =>
-    (localStorage.getItem(fontStorageKey) as FontChoice | null) ?? "system",
+    (localStorage.getItem(fontStorageKey) as FontChoice | null)
+      ?? (localStorage.getItem(legacyFontStorageKey) as FontChoice | null)
+      ?? "system",
   );
   const [omarchyTheme, setOmarchyTheme] = useState<OmarchyTheme | null>(null);
 

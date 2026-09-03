@@ -26,8 +26,8 @@ export default function NotesList({ onNoteSelect, selectedNote, onSelectedNoteDe
 
   useEffect(() => {
     const focus = () => searchRef.current?.focus();
-    window.addEventListener("cozy:focus-search", focus);
-    return () => window.removeEventListener("cozy:focus-search", focus);
+    window.addEventListener("panels:focus-search", focus);
+    return () => window.removeEventListener("panels:focus-search", focus);
   }, []);
 
   const heading = selectedTag

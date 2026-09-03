@@ -13,7 +13,8 @@ export interface OmarchyTheme {
   colors: Record<string, string>;
 }
 
-const browserStorageKey = "cozy-note-garden.state.v1";
+const browserStorageKey = "panels.state.v1";
+const legacyBrowserStorageKey = "cozy-note-garden.state.v1";
 
 export const isTauri = () => "__TAURI_INTERNALS__" in window;
 
@@ -27,7 +28,10 @@ export async function loadAppState(): Promise<PersistedAppState | null> {
     return invokeNative<PersistedAppState | null>("load_app_state");
   }
 
-  const saved = localStorage.getItem(browserStorageKey);
+  const saved = localStorage.getItem(browserStorageKey) ?? localStorage.getItem(legacyBrowserStorageKey);
+  if (saved && !localStorage.getItem(browserStorageKey)) {
+    localStorage.setItem(browserStorageKey, saved);
+  }
   return saved ? (JSON.parse(saved) as PersistedAppState) : null;
 }
 
@@ -54,8 +58,8 @@ export async function chooseBackupPath(): Promise<string | null> {
   if (!isTauri()) return null;
   const { save } = await import("@tauri-apps/plugin-dialog");
   return save({
-    title: "Export Note Garden backup",
-    defaultPath: `cozy-note-garden-${new Date().toISOString().slice(0, 10)}.json`,
+    title: "Export Panels backup",
+    defaultPath: `panels-${new Date().toISOString().slice(0, 10)}.json`,
     filters: [{ name: "JSON backup", extensions: ["json"] }],
   });
 }
@@ -64,7 +68,7 @@ export async function chooseImportPath(): Promise<string | null> {
   if (!isTauri()) return null;
   const { open } = await import("@tauri-apps/plugin-dialog");
   const selected = await open({
-    title: "Import Note Garden backup",
+    title: "Import Panels backup",
     multiple: false,
     filters: [{ name: "JSON backup", extensions: ["json"] }],
   });

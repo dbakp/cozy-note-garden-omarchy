@@ -5,6 +5,12 @@ INSTALL_BIN="${XDG_BIN_HOME:-$HOME/.local/bin}"
 INSTALL_DATA="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 rm -f -- \
+  "$INSTALL_BIN/panels" \
+  "$INSTALL_DATA/applications/io.github.dbakp.panels.desktop" \
+  "$INSTALL_DATA/applications/panels.desktop" \
+  "$INSTALL_DATA/metainfo/io.github.dbakp.panels.metainfo.xml" \
+  "$INSTALL_DATA/icons/hicolor/scalable/apps/panels.svg" \
+  "$INSTALL_DATA/icons/hicolor/128x128/apps/panels.png" \
   "$INSTALL_BIN/cozy-note-garden" \
   "$INSTALL_DATA/applications/io.github.dbakp.cozynotegarden.desktop" \
   "$INSTALL_DATA/applications/cozy-note-garden.desktop" \
@@ -12,8 +18,12 @@ rm -f -- \
   "$INSTALL_DATA/icons/hicolor/scalable/apps/cozy-note-garden.svg" \
   "$INSTALL_DATA/icons/hicolor/128x128/apps/cozy-note-garden.png"
 
+rm -rf -- "$INSTALL_DATA/panels"
+
 if [[ ${1:-} == "--purge-data" ]]; then
-  rm -rf -- "$INSTALL_DATA/io.github.dbakp.cozynotegarden"
+  rm -rf -- \
+    "$INSTALL_DATA/io.github.dbakp.panels" \
+    "$INSTALL_DATA/io.github.dbakp.cozynotegarden"
   echo "Removed the app and its local note library."
 else
   echo "Removed the app. Your note library is preserved."

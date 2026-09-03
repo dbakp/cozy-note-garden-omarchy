@@ -5,7 +5,7 @@ labels: [bug]
 body:
   - type: markdown
     attributes:
-      value: Thanks for helping improve Cozy Note Garden.
+      value: Thanks for helping improve Panels.
   - type: input
     id: version
     attributes:

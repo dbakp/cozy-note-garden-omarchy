@@ -10,6 +10,7 @@ use std::{
 use tauri::{AppHandle, Manager};
 
 const DATA_FILE_NAME: &str = "garden.json";
+const LEGACY_APP_IDENTIFIER: &str = "io.github.dbakp.cozynotegarden";
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -27,6 +28,31 @@ fn data_file(app: &AppHandle) -> Result<PathBuf, String> {
         .map_err(|error| format!("Could not resolve the XDG data directory: {error}"))
 }
 
+fn legacy_data_file(app: &AppHandle) -> Result<PathBuf, String> {
+    app.path()
+        .data_dir()
+        .map(|directory| directory.join(LEGACY_APP_IDENTIFIER).join(DATA_FILE_NAME))
+        .map_err(|error| format!("Could not resolve the legacy XDG data directory: {error}"))
+}
+
+fn migrate_data_file(legacy: &Path, current: &Path) -> Result<bool, String> {
+    if current.exists() || !legacy.exists() {
+        return Ok(false);
+    }
+    if let Some(parent) = current.parent() {
+        fs::create_dir_all(parent)
+            .map_err(|error| format!("Could not create {}: {error}", parent.display()))?;
+    }
+    fs::copy(legacy, current).map_err(|error| {
+        format!(
+            "Could not migrate the existing Panels library from {} to {}: {error}",
+            legacy.display(),
+            current.display()
+        )
+    })?;
+    Ok(true)
+}
+
 fn validate_state(state: &JsonValue) -> Result<(), String> {
     if state.get("version").and_then(JsonValue::as_u64) != Some(1) {
         return Err("This backup uses an unsupported data version.".into());
@@ -34,7 +60,7 @@ fn validate_state(state: &JsonValue) -> Result<(), String> {
     if !state.get("notes").is_some_and(JsonValue::is_array)
         || !state.get("folders").is_some_and(JsonValue::is_array)
     {
-        return Err("The file is not a valid Cozy Note Garden backup.".into());
+        return Err("The file is not a valid Panels backup.".into());
     }
     Ok(())
 }
@@ -66,6 +92,7 @@ fn read_json(path: &Path) -> Result<JsonValue, String> {
 #[tauri::command]
 fn load_app_state(app: AppHandle) -> Result<Option<JsonValue>, String> {
     let path = data_file(&app)?;
+    migrate_data_file(&legacy_data_file(&app)?, &path)?;
     if !path.exists() {
         return Ok(None);
     }
@@ -139,11 +166,22 @@ fn get_omarchy_theme() -> Result<Option<OmarchyTheme>, String> {
         .ok()
         .filter(|output| output.status.success())
         .map(|output| String::from_utf8_lossy(&output.stdout).to_string())
-        .and_then(|families| families.split(',').next().map(str::trim).map(str::to_string))
+        .and_then(|families| {
+            families
+                .split(',')
+                .next()
+                .map(str::trim)
+                .map(str::to_string)
+        })
         .filter(|font| !font.is_empty())
         .unwrap_or_else(|| "monospace".into());
 
-    Ok(Some(OmarchyTheme { name, mode, font, colors }))
+    Ok(Some(OmarchyTheme {
+        name,
+        mode,
+        font,
+        colors,
+    }))
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -159,6 +197,13 @@ pub fn run() {
     }
 
     tauri::Builder::default()
+        .setup(|app| {
+            if let Some(window) = app.get_webview_window("main") {
+                window.set_decorations(false)?;
+                window.set_title("Panels")?;
+            }
+            Ok(())
+        })
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             if let Some(window) = app.get_webview_window("main") {
                 let _ = window.show();
@@ -177,7 +222,7 @@ pub fn run() {
             get_omarchy_theme,
         ])
         .run(tauri::generate_context!())
-        .expect("error while running Cozy Note Garden");
+        .expect("error while running Panels");
 }
 
 #[cfg(test)]
@@ -202,7 +247,10 @@ mod tests {
     #[test]
     fn validates_supported_state() {
         assert!(validate_state(&sample_state()).is_ok());
-        assert!(validate_state(&serde_json::json!({ "version": 2, "notes": [], "folders": [] })).is_err());
+        assert!(
+            validate_state(&serde_json::json!({ "version": 2, "notes": [], "folders": [] }))
+                .is_err()
+        );
         assert!(validate_state(&serde_json::json!({ "version": 1, "notes": {} })).is_err());
     }
 
@@ -212,7 +260,7 @@ mod tests {
             .duration_since(UNIX_EPOCH)
             .expect("clock")
             .as_nanos();
-        let directory = std::env::temp_dir().join(format!("cozy-note-garden-test-{stamp}"));
+        let directory = std::env::temp_dir().join(format!("panels-test-{stamp}"));
         let path = directory.join("garden.json");
         let state = sample_state();
 
@@ -222,5 +270,31 @@ mod tests {
         assert!(!path.with_extension("json.tmp").exists());
 
         fs::remove_dir_all(directory).expect("clean test data");
+    }
+
+    #[test]
+    fn migrates_a_legacy_library_without_overwriting_current_data() {
+        let stamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos();
+        let directory = std::env::temp_dir().join(format!("panels-migration-test-{stamp}"));
+        let legacy = directory.join("legacy/garden.json");
+        let current = directory.join("current/garden.json");
+        let original = sample_state();
+
+        write_json(&legacy, &original).expect("write legacy state");
+        assert!(migrate_data_file(&legacy, &current).expect("migrate state"));
+        assert_eq!(read_json(&current).expect("read migrated state"), original);
+
+        let replacement = serde_json::json!({ "version": 1, "notes": [], "folders": [] });
+        write_json(&current, &replacement).expect("write current state");
+        assert!(!migrate_data_file(&legacy, &current).expect("skip existing state"));
+        assert_eq!(
+            read_json(&current).expect("preserve current state"),
+            replacement
+        );
+
+        fs::remove_dir_all(directory).expect("clean migration test data");
     }
 }

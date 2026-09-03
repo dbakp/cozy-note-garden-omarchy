@@ -1,13 +1,13 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Note Garden
+Name=Panels
 GenericName=Notes
 Comment=Private, local-first notes that follow your Omarchy theme
-Exec=cozy-note-garden
-Icon=cozy-note-garden
+Exec=panels
+Icon=panels
 Terminal=false
 Categories=Office;
-Keywords=notes;writing;garden;omarchy;
+Keywords=notes;writing;panels;omarchy;
 StartupNotify=true
-StartupWMClass=cozy-note-garden
+StartupWMClass=panels
