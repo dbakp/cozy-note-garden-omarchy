@@ -254,7 +254,7 @@
 
   .ProseMirror table td,
   .ProseMirror table th {
-    @apply border border-border p-2 relative group;
+    @apply border border-border p-2 relative;
     width: 100px;
     min-width: 100px;
     max-width: 100px;

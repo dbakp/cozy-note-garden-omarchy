@@ -61,6 +61,19 @@ export const createEditorProps = (
       void openExternalUrl(anchor.href).catch((error) => console.error('Could not open link', error));
       return true;
     },
+    click: (_view, event) => {
+      if (!(event.ctrlKey || event.metaKey)) return false;
+      const anchor = anchorFromEvent(event);
+      if (!anchor?.href) return false;
+
+      // WebKit can let the browser's native modified-click handling win when
+      // mousedown was delivered outside ProseMirror's event pipeline. Catch
+      // the click as a second line of defense so the native focus handoff is
+      // always used instead of opening a background tab directly.
+      event.preventDefault();
+      void openExternalUrl(anchor.href).catch((error) => console.error('Could not open link', error));
+      return true;
+    },
     keydown: (view, event) => {
       // Let all keyboard events pass through
       return false;
