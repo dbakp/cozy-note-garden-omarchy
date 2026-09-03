@@ -3,6 +3,12 @@ import type { EditorProps } from '@tiptap/pm/view';
 import { handleFileUpload, handlePastedFiles } from './ImageHandler';
 import { openExternalUrl } from '@/lib/native';
 
+const anchorFromEvent = (event: MouseEvent): HTMLAnchorElement | null => {
+  const target = event.target;
+  const element = target instanceof Element ? target : target instanceof Node ? target.parentElement : null;
+  return element?.closest<HTMLAnchorElement>('a[href]') ?? null;
+};
+
 export const createEditorProps = (
   editor: Editor | null, 
   handleToast: (title: string, description: string, variant?: "default" | "destructive") => void
@@ -45,16 +51,16 @@ export const createEditorProps = (
     }
     return false;
   },
-  handleClick: (_view, _pos, event) => {
-    if (!(event.ctrlKey || event.metaKey)) return false;
-    const anchor = (event.target as HTMLElement | null)?.closest('a');
-    if (!anchor?.href) return false;
-
-    event.preventDefault();
-    void openExternalUrl(anchor.href);
-    return true;
-  },
   handleDOMEvents: {
+    mousedown: (_view, event) => {
+      if (!(event.ctrlKey || event.metaKey)) return false;
+      const anchor = anchorFromEvent(event);
+      if (!anchor?.href) return false;
+
+      event.preventDefault();
+      void openExternalUrl(anchor.href).catch((error) => console.error('Could not open link', error));
+      return true;
+    },
     keydown: (view, event) => {
       // Let all keyboard events pass through
       return false;
