@@ -241,12 +241,18 @@ fn focus_browser_window() -> bool {
                 .and_then(JsonValue::as_i64)
             {
                 let _ = Command::new("hyprctl")
-                    .args(["dispatch", "workspace", &workspace.to_string()])
+                    .args([
+                        "dispatch",
+                        &format!("hl.dsp.focus({{ workspace = \"{workspace}\" }})"),
+                    ])
                     .status();
             }
 
             return Command::new("hyprctl")
-                .args(["dispatch", "focuswindow", &format!("address:{address}")])
+                .args([
+                    "dispatch",
+                    &format!("hl.dsp.focus({{ window = \"address:{address}\" }})"),
+                ])
                 .status()
                 .map(|status| status.success())
                 .unwrap_or(false);
