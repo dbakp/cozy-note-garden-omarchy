@@ -148,6 +148,17 @@
     backdrop-filter: blur(16px);
   }
 
+  /* Tiptap adds the ProseMirror class at runtime, so anchor the layout rule
+     to the editor's stable DOM attribute to keep it in the production CSS. */
+  .editor-pane [contenteditable="true"] {
+    display: block;
+    width: 100%;
+    max-width: 64rem;
+    margin-inline: auto;
+    padding-inline: clamp(2rem, 5vw, 4rem);
+    box-sizing: border-box;
+  }
+
   .ProseMirror {
     @apply mx-auto w-full max-w-4xl py-7 text-base leading-7;
     padding-inline: clamp(1.5rem, 5vw, 4rem);
